@@ -26,8 +26,14 @@ public class ConsoleInput implements AutoCloseable {
     }
 
     public int askShuffleCount() {
-        System.out.print("Enter shuffle count: ");
-        return scanner.nextInt();
+        int s;
+
+        do {
+            System.out.print("Enter shuffle count (>0): ");
+            s = scanner.nextInt();
+        } while (s <= 0);
+
+        return s;
     }
 
     public int askMenuChoice() {
