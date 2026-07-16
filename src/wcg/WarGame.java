@@ -2,23 +2,18 @@ package wcg;
 
 import core.Card;
 import core.Game;
-import core.Rank;
-import core.Suit;
 import io.ConsoleInput;
-import io.ConsolePrinter;
 import io.DeckFileReader;
 import shuffle.PerfectShuffle;
 import shuffle.Shuffle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class WarGame implements Game {
     public static String NO_WINNER = "none";
 
     private final ConsoleInput input;
-    private final ConsolePrinter printer;
 
     // Game state shared by initialize(), play(), and displayResult()
     private List<Card> orderedDeck;
@@ -31,12 +26,8 @@ public class WarGame implements Game {
     private int roundNumber;
     private String winner;
 
-    public WarGame(
-            ConsoleInput input,
-            ConsolePrinter printer) {
-
+    public WarGame(ConsoleInput input) {
         this.input = input;
-        this.printer = printer;
         this.winner = NO_WINNER;
         this.roundNumber = 0;
     }
@@ -44,7 +35,7 @@ public class WarGame implements Game {
     @Override
     public void initialize() throws Exception {
         // Read, shuffle and deal cards
-        System.out.println("=== Hello, welcome to Hannah's War Card Game ===");
+        System.out.println("\n=== Hello, welcome to Hannah's War Card Game ===");
 
         // read cards from file
         // String path = input.askFile();
@@ -62,7 +53,7 @@ public class WarGame implements Game {
         }
 
         // print path txt file deck
-        System.out.println(orderedDeck.toString());
+        System.out.println("Deck from " + path + orderedDeck.toString());
 
 //        for (int i=0; i < deck.size(); i++) {
 //            System.out.println(deck.get(i));
@@ -103,7 +94,7 @@ public class WarGame implements Game {
 
         System.out.println();
         for (WarPlayer player : players) {
-            System.out.println(player.getName() + "'s Deck: " + player.getHandAsString());
+            System.out.println(player.getName() + "'s Hand: " + player.getHandAsString());
         }
 
     }
