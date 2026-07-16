@@ -14,7 +14,6 @@ public class Main {
             System.out.println("=== Hannah's Card Games ===");
             System.out.println("[1] War");
             System.out.println("[2] Solitaire");
-            System.out.print("Choose a game: ");
 
             int choice = input.askMenuChoice();
 
@@ -30,7 +29,6 @@ public class Main {
             game.initialize();
             game.play();
             game.displayResult();
-
         }
     }
 }

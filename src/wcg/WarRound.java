@@ -11,24 +11,17 @@ public class WarRound {
         List<Card> roundCards = new ArrayList<>();
         String winner = NO_WINNER;
 
-        // players play all top cards
-        //    for (int i = 0; i < n; i++) {
-        //        if (masterList.get(i).size() != 0) { // add card to round_cards, remove card from player decks
-        //            round_cards.add(masterList.get(i).get(0));
-        //            masterList.get(i).remove(0);
-        //        } else { // for players who lost all their cards, need to save their index
-        //            round_cards.add("0");
-        //        }
-        //    }
-
+        List<WarPlayer> toRemove = new ArrayList<>();
         for (WarPlayer player : players) {
             if (player.hasCards()) {
                 Card playedCard = player.playCard();
                 roundCards.add(playedCard);
-            } else {
-                roundCards.add(null);
+            } else { // add players with no cards to toRemove list 
+                // roundCards.add(null);
+                toRemove.add(player);
             }
         }
+        // players.removeAll(toRemove);
 
         // find highest card
         Card highest = null;
@@ -51,7 +44,6 @@ public class WarRound {
             // remove all losing player's cards
             roundCards.removeIf(card -> card == null);
 
-            // System.out.println("\n\t\t\t" + active_players);
             System.out.println("\nRound " + (roundNumber) + " Top Cards Played: " + roundCards);
             for (WarPlayer player : players) {
                 System.out.println(player.getName() + "'s Cards in Hand: " + player.getHandAsString());
@@ -61,7 +53,7 @@ public class WarRound {
 
             // add round cards to winner's deck
             winnerRound.receiveCards(roundCards);
-            System.out.println("Winner's deck " + winnerRound.getName() + "-" + winnerRound.getHandAsString());
+            System.out.println("Winner's deck (" + winnerRound.getName() + ") - " + winnerRound.getHandAsString());
 
             // finding winner, same card count as deck
             if (winnerRound.getCardCount() == orderedDeck.size()) {
@@ -70,6 +62,10 @@ public class WarRound {
             }
 
             // no other players have cards
+            // if (players.size() == 1) {
+            //     winner = players.get(0).getName();
+            // }
+
             int zero_count = 0;
             for (WarPlayer player : players) {
                 if (!player.hasCards()) {
