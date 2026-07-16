@@ -9,6 +9,7 @@ import shuffle.Shuffle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class WarGame implements Game {
     public static String NO_WINNER = "none";
@@ -42,15 +43,24 @@ public class WarGame implements Game {
         String path = "C:\\Users\\hannah.samson\\IdeaProjects\\CardGames\\src\\decks\\input.txt";
         String data = DeckFileReader.readFileAsString(path);
         String input_data = data.replace("Initial card sequence: ", "");
-        String[] stringDeck = input_data.split(","); // convert to list of strings
+        // String[] stringDeck = input_data.split(","); // convert to list of strings
 
         // empty card deck
+        // orderedDeck = new ArrayList<>();
+
+        StringTokenizer tokenizer = new StringTokenizer(input_data, ",");
+
         orderedDeck = new ArrayList<>();
 
-        // converts string to Card class
-        for (String card : stringDeck) {
-            orderedDeck.add(Card.fromString(card));
+        while (tokenizer.hasMoreTokens()) {
+            String cardString = tokenizer.nextToken().trim();
+            orderedDeck.add(Card.fromString(cardString));
         }
+
+        // converts string to Card class
+        // for (String card : stringDeck) {
+        //     orderedDeck.add(Card.fromString(card));
+        // }
 
         // print path txt file deck
         System.out.println("Deck from " + path + orderedDeck.toString());
