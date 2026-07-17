@@ -1,5 +1,5 @@
 import core.Game;
-//import solitaire.SolitaireGame;
+import solitaire.SolitaireGame;
 import wcg.WarGame;
 import io.ConsoleInput;
 
@@ -14,7 +14,7 @@ public class Main {
 
             Game game = switch (choice) {
                 case 1 -> new WarGame(input);
-//                case 2 -> new SolitaireGame(input);
+                case 2 -> new SolitaireGame(input);
                 default -> throw new IllegalArgumentException(
                         "Invalid game selection."
                 );

@@ -1,4 +1,44 @@
 package solitaire;
 
+import core.Card;
+import core.Rank;
+import core.Suit;
+
 public class SolitaireCard {
+    private final Card card;
+    private boolean faceUp;
+
+    public SolitaireCard(Card card) {
+        this.card = card;
+        this.faceUp = false;
+    }
+
+    public Card getCard() {
+        return card;
+    }
+
+    public boolean isFaceUp() {
+        return faceUp;
+    }
+
+    public void turnFaceUp() {
+        faceUp = true;
+    }
+
+    public void turnFaceDown() {
+        faceUp = false;
+    }
+
+    public Rank getRank() {
+        return card.getRank();
+    }
+
+    public Suit getSuit() {
+        return card.getSuit();
+    }
+
+    @Override
+    public String toString() {
+        return faceUp ? card.toString() : "XX";
+    }
 }

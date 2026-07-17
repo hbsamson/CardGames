@@ -36,6 +36,17 @@ public class ConsoleInput implements AutoCloseable {
         return s;
     }
 
+    public int askDrawCount() {
+        int n;
+
+        do {
+            System.out.print("Enter draw count (1 or 3): ");
+            n = scanner.nextInt();
+        } while (n != 1 || n != 3);
+
+        return n;
+    }
+
     public int askMenuChoice() {
         System.out.print("Choose a game: ");
         return scanner.nextInt();

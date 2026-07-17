@@ -1,15 +1,21 @@
 package core;
 
 public enum Suit {
-    DIAMONDS("D"),
-    HEARTS("H"),
-    SPADES("S"),
-    CLUBS("C");
+    DIAMONDS("D", "♦"),
+    HEARTS("H", "♥"),
+    SPADES("S", "♠"),
+    CLUBS("C", "♣");
 
+    private final String code;
     private final String symbol;
 
-    Suit(String symbol) {
+    Suit(String code, String symbol) {
+        this.code = code;
         this.symbol = symbol;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public String getSymbol() {
@@ -18,7 +24,7 @@ public enum Suit {
 
     public static Suit fromString(String value) {
         for (Suit suit : values()) {
-            if (suit.symbol.equals(value)) {
+            if (suit.code.equals(value)) {
                 return suit;
             }
         }

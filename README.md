@@ -373,11 +373,21 @@ The primary architectural goal is to keep the **game logic independent** of the 
 - [ ] Add comprehensive JavaDoc comments
 
 ### Solitaire
-- [ ] Implement Stock, Waste, Tableau, and Foundation piles
-- [ ] Card movement validation
-- [ ] Win-condition detection
-- [ ] Progress detection
-- [ ] User interaction loop
+- [x] Create SolitaireCard
+- [x] Create SolitaireTable
+- [x] Create TableauPile
+- [x] Create FoundationPile
+- [x] Create TalonPile
+- [x] Create WastePile
+- [x] Deal the initial opening tableau
+- [ ] Display the table set of cards
+- [ ] Draw Stock → Waste
+- [ ] Recycle Waste → Stock
+- [ ] Implement Tableau validation
+- [ ] Implement Foundation validation
+- [ ] Implement move execution
+- [ ] Implement win detection
+- [ ] Implement no-progress or cycle detection
 
 ### General
 - [ ] Improve project documentation

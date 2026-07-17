@@ -1,5 +1,7 @@
 package core;
 
+import solitaire.SolitaireCard;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +22,14 @@ public class Deck {
     public Card drawTopCard() {
         return cards.pollFirst();
         // pollFirst() method retrieves and removes the first element of a collection, or returns null if the collection is empty
+    }
+
+    public SolitaireCard drawSolitaireTopCard() {
+        Card card = cards.pollFirst();
+        if (card == null) {
+            return null;
+        }
+        return new SolitaireCard(card);
     }
 
     public Card viewTopCard() {
