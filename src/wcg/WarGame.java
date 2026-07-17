@@ -18,6 +18,7 @@ public class WarGame implements Game {
 
     // Game state shared by initialize(), play(), and displayResult()
     private List<Card> orderedDeck;
+    private List<Card> inputDeck;
     private List<Card> shuffledDeck;
     private List<WarPlayer> players;
     public static List<Card> excessCards;
@@ -38,45 +39,43 @@ public class WarGame implements Game {
         // Read, shuffle and deal cards
         System.out.println("\n=== Hello, welcome to Hannah's War Card Game ===");
 
-        // read cards from file
-        // String path = input.askFile();
-        String path = "C:\\Users\\hannah.samson\\IdeaProjects\\CardGames\\src\\decks\\input.txt";
-        String data = DeckFileReader.readFileAsString(path);
-        String input_data = data.replace("Initial card sequence: ", "");
-        // String[] stringDeck = input_data.split(","); // convert to list of strings
+        // reads inOrder.txt for in order listing of cards
+        String ordered_path = "src\\decks\\inOrder.txt";
+        String ordered_data = DeckFileReader.readFileAsString(ordered_path);
+        String cleaned_ordered_data = ordered_data.replace("Initial card sequence: ", "");
+        String[] string_deck = cleaned_ordered_data.split(","); // convert to list of strings
 
-        // empty card deck
-        // orderedDeck = new ArrayList<>();
-
-        StringTokenizer tokenizer = new StringTokenizer(input_data, ",");
-
+        // empty card ordered card deck
         orderedDeck = new ArrayList<>();
-
-        while (tokenizer.hasMoreTokens()) {
-            String cardString = tokenizer.nextToken().trim();
-            orderedDeck.add(Card.fromString(cardString));
+        // converts string to Card class
+        for (String card : string_deck) {
+            orderedDeck.add(Card.fromString(card));
         }
 
-        // converts string to Card class
-        // for (String card : stringDeck) {
-        //     orderedDeck.add(Card.fromString(card));
-        // }
+        // ask for path to input deck
+        String path = input.askFile();
+        String data = DeckFileReader.readFileAsString(ordered_path);
+        String input_data = data.replace("Initial card sequence: ", "");
+        StringTokenizer tokenizer = new StringTokenizer(input_data, ",");
+
+        // placing cards (as tokens) into deck
+        inputDeck = new ArrayList<>();
+        while (tokenizer.hasMoreTokens()) {
+            String cardString = tokenizer.nextToken().trim();
+            inputDeck.add(Card.fromString(cardString));
+        }
 
         // print path txt file deck
-        System.out.println("Deck from " + path + orderedDeck.toString());
-
-//        for (int i=0; i < deck.size(); i++) {
-//            System.out.println(deck.get(i));
-//        }
+        System.out.println("Deck from " + path + inputDeck.toString());
 
         // player count 2 <= n <= 8
         n = input.askPlayerCount();
 
-        // shuffle
+        // shuffle inputDeck
         s = input.askShuffleCount();
         Shuffle shuffler = new PerfectShuffle();
         for (int i=0; i < s; i++) {
-            shuffledDeck = shuffler.shuffle(orderedDeck);
+            shuffledDeck = shuffler.shuffle(inputDeck);
         }
 
         System.out.println("\nShuffled Deck:");
