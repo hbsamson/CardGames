@@ -13,23 +13,23 @@ import java.util.StringTokenizer;
 
 public class WarGame implements Game {
     public static String NO_WINNER = "none";
-
+    public record Winner(String name, List<Card> deck) {}
     private final ConsoleInput input;
 
     // Game state shared by initialize(), play(), and displayResult()
     private List<Card> orderedDeck;
     private List<Card> shuffledDeck;
     private List<WarPlayer> players;
-    private List<Card> excessCards;
+    public static List<Card> excessCards;
+    private Winner winner;
 
-    public int n;
+    private int n;
     private int s;
     private int roundNumber;
-    private String winner;
 
     public WarGame(ConsoleInput input) {
         this.input = input;
-        this.winner = NO_WINNER;
+        this.winner = new Winner(NO_WINNER, List.of());
         this.roundNumber = 0;
     }
 
@@ -120,12 +120,17 @@ public class WarGame implements Game {
     @Override
     public boolean isGameOver() {
         // One player owns all cards.
-        return !NO_WINNER.equals(winner);
+        return !NO_WINNER.equals(winner.name());
     }
 
     @Override
     public void displayResult() {
         // Display War winner
-        System.out.println("\n===== " + winner.toUpperCase() + " IS THE WINNER!!! =====");
+        System.out.println("\n===== " + winner.name().toUpperCase() + " IS THE WINNER!!! =====");
+        System.out.println(winner.deck());
+    }
+
+    public static List<Card> getExcessCards() {
+        return excessCards;
     }
 }

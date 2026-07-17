@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static wcg.WarGame.NO_WINNER;
+
 public class WarRound {
-    public static String gameRound(int roundNumber, List<WarPlayer> players, List<Card> orderedDeck, List<Card> shuffledDeck) {
+    public static WarGame.Winner gameRound(int roundNumber, List<WarPlayer> players, List<Card> orderedDeck, List<Card> shuffledDeck) {
         List<Card> roundCards = new ArrayList<>();
         String winner = NO_WINNER;
+        List<Card> outDeck = new ArrayList<>();
 
         List<WarPlayer> toRemove = new ArrayList<>();
         for (WarPlayer player : players) {
@@ -58,7 +60,7 @@ public class WarRound {
             // finding winner, same card count as deck
             if (winnerRound.getCardCount() == orderedDeck.size()) {
                 winner = winnerRound.getName();
-                return winner;
+                return new WarGame.Winner(winner, winnerRound.getHand().asList());
             }
 
             // no other players have cards
@@ -70,17 +72,19 @@ public class WarRound {
             for (WarPlayer player : players) {
                 if (!player.hasCards()) {
                     zero_count += 1;
-                } else {
+                } else { // gets name, outdeck = deck of winner + excess cards
                     winner = player.getName();
+                    outDeck = player.getHand().asList();
+                    outDeck.addAll(WarGame.getExcessCards());
                 }
             }
 
             if (zero_count == (players.size() - 1)) {
-                return winner;
+                return new WarGame.Winner(winner, outDeck);
             }
 
         }
-        return NO_WINNER;
+        return new WarGame.Winner(NO_WINNER, List.of());
     }
 
 }
