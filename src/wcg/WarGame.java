@@ -40,7 +40,7 @@ public class WarGame implements Game {
         System.out.println("\n=== Hello, welcome to Hannah's War Card Game ===");
 
         // reads inOrder.txt for in order listing of cards
-        String ordered_path = "src\\decks\\inOrder.txt";
+        String ordered_path = "src\\decks\\input.txt";
         String ordered_data = DeckFileReader.readFileAsString(ordered_path);
         String cleaned_ordered_data = ordered_data.replace("Initial card sequence: ", "");
         String[] string_deck = cleaned_ordered_data.split(","); // convert to list of strings
