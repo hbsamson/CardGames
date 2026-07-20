@@ -42,6 +42,8 @@ public class SolitaireGame implements Game {
     @Override
     public void initialize() throws Exception {
         // Load and shuffle using your existing implementation.
+        System.out.println("\n=== Hello, welcome to Hannah's Solitaire Game ===");
+
         table = new SolitaireTable();
 
         dealInitialTableau();
@@ -195,10 +197,14 @@ public class SolitaireGame implements Game {
             }
         }
 
+        // flip all bottom cards to faceup
+        for (TableauPile pile : table.getTableau()) {
+            pile.revealBottomCard();
+        }
+
         // add excess to talon
-        while (index < inputDeck.size()) {
+        while (!inputDeck.isEmpty()) {
             table.getTalon().addCard(inputDeck.drawSolitaireTopCard());
-            index++;
         }
     }
 
@@ -238,9 +244,9 @@ public class SolitaireGame implements Game {
         System.out.println("\nManoeuvre Tableau");
         table.printTableau();
         System.out.println("Talon");
-        System.out.println(table.getTalon());
+        table.printTalon();
         System.out.println("Talon Waste");
-        System.out.println(table.getWaste());
-        System.out.println("====================== Table ======================");
+        table.printWaste();
+        System.out.println("==================================================");
     }
 }

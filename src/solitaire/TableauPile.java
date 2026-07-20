@@ -19,7 +19,7 @@ public class TableauPile {
         cards.addAll(cardsToAdd);
     }
 
-    public SolitaireCard getTopCard() {
+    public SolitaireCard getBottomCard() {
         if (cards.isEmpty()) {
             return null;
         }
@@ -52,11 +52,11 @@ public class TableauPile {
         return Collections.unmodifiableList(cards);
     }
 
-    public void revealTopCard() {
-        SolitaireCard topCard = getTopCard();
+    public void revealBottomCard() {
+        SolitaireCard botCard = getBottomCard();
 
-        if (topCard != null && !topCard.isFaceUp()) {
-            topCard.turnFaceUp();
+        if (botCard != null && !botCard.isFaceUp()) {
+            botCard.turnFaceUp();
         }
     }
 

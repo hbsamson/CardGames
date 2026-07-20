@@ -39,6 +39,6 @@ public class SolitaireCard {
 
     @Override
     public String toString() {
-        return faceUp ? card.toString() : "XX";
+        return faceUp ? card.toString() : " X ";
     }
 }
