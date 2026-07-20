@@ -22,9 +22,6 @@ public class SolitaireTable {
             m_stack.add(new TableauPile());
         }
 
-//        for (int i = 0; i < FOUNDATION_COUNT; i++) {
-//            f_stack.add(new FoundationPile());
-//        }
         f_stack.add(new FoundationPile(Suit.SPADES));
         f_stack.add(new FoundationPile(Suit.CLUBS));
         f_stack.add(new FoundationPile(Suit.HEARTS));
@@ -38,6 +35,18 @@ public class SolitaireTable {
         return m_stack;
     }
 
+    public List<FoundationPile> getFoundations() {
+        return f_stack;
+    }
+
+    public TalonPile getTalon() {
+        return talon;
+    }
+
+    public WastePile getWaste() {
+        return waste;
+    }
+
     public void printTableau() {
         int maxHeight = 0;
 
@@ -46,7 +55,7 @@ public class SolitaireTable {
             maxHeight = Math.max(maxHeight, pile.size());
         }
 
-        System.out.println("--------------------------------------------------");
+        System.out.println("---------------------------------------------------");
         for (int row = 0; row < maxHeight; row++) {
             for (TableauPile pile : m_stack) {
                 if (row < pile.size()) {
@@ -58,11 +67,7 @@ public class SolitaireTable {
 
             System.out.println();
         }
-        System.out.println("--------------------------------------------------");
-    }
-
-    public List<FoundationPile> getFoundations() {
-        return f_stack;
+        System.out.println("---------------------------------------------------");
     }
 
     public void printFoundations() {
@@ -71,20 +76,23 @@ public class SolitaireTable {
         }
         System.out.println();
 
-        // Progress
+        // cards ranks here (A-K format)
         for (FoundationPile pile : f_stack) {
             System.out.printf("%-8s", pile.getProgress());
         }
         System.out.println();
     }
 
-    public TalonPile getTalon() {
-        return talon;
+
+
+    public void printTalon() {
+        System.out.println(talon.getCards());
     }
 
-    public WastePile getWaste() {
-        return waste;
+    public void printWaste() {
+        System.out.println(waste.getCards());
     }
+
 
     public boolean areFoundationsComplete() {
         for (FoundationPile foundation : f_stack) {
@@ -94,5 +102,15 @@ public class SolitaireTable {
         }
 
         return true;
+    }
+
+    public void drawFromTalon(int drawCount) {
+        List<SolitaireCard> drawnCards = talon.drawCards(drawCount);
+        waste.addCards(drawnCards);
+    }
+
+    public void recycleWaste() {
+        talon.addCards(waste.getCards());
+        List<SolitaireCard> recycledCards = waste.removeAllCards();
     }
 }
