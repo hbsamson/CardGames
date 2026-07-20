@@ -47,7 +47,7 @@ The project emphasizes object-oriented design, modularity, and code reusability 
 |-----------|--------|
 | Shared Framework | ✅ Completed |
 | War Card Game | 🚧 Functional; ongoing refactoring and cleanup |
-| Solitaire | 🚧 Initial development |
+| Solitaire | 🚧 Functional; ongoing refactoring and cleanup |
 | Documentation | 🚧 In Progress |
 
 ---
@@ -78,11 +78,20 @@ src/
 │   └── PerfectShuffle.java
 │
 ├── wcg/
-│   ├── WarGame.java
 │   ├── WarPlayer.java
-│   └── WarRound.java
+│   ├── WarRound.java
+│   └── WarGame.java
 │
 ├── solitaire/
+│   ├── FoundationPile.java
+│   ├── TableauPile.java
+│   ├── TalonPile.java
+│   ├── WastePile.java
+│   ├── SolitaireCard.java
+│   ├── SolitaireMove.java
+│   ├── SolitaireMoveType.java
+│   ├── SolitaireTable.java
+│   └── SolitaireGame.java
 │
 └── Main.java
 ```
@@ -109,6 +118,58 @@ java -cp out Main
 ```
 
 > Ensure that `input.txt` is available in the expected location before running the program.
+
+---
+
+## Current Displays
+
+### War Card Game
+```
+=== Hello, welcome to Hannah's War Card Game ===
+File path: src/decks/input.txt
+Deck from src/decks/input.txt: 
+[D-A, D-K, D-Q, D-J, D-10, D-9, D-8, D-7, D-6, D-5, D-4, D-3, D-2, H-A, H-K, H-Q, H-J, H-10, H-9, H-8, H-7, H-6, H-5, H-4, H-3, H-2, S-A, S-K, S-Q, S-J, S-10, S-9, S-8, S-7, S-6, S-5, S-4, S-3, S-2, C-A, C-K, C-Q, C-J, C-10, C-9, C-8, C-7, C-6, C-5, C-4, C-3, C-2]
+Enter number of players (2-8): 2
+Enter shuffle count (>0): 1
+
+Shuffled Deck:
+[D-A, S-A, D-K, S-K, D-Q, S-Q, D-J, S-J, D-10, S-10, D-9, S-9, D-8, S-8, D-7, S-7, D-6, S-6, D-5, S-5, D-4, S-4, D-3, S-3, D-2, S-2, H-A, C-A, H-K, C-K, H-Q, C-Q, H-J, C-J, H-10, C-10, H-9, C-9, H-8, C-8, H-7, C-7, H-6, C-6, H-5, C-5, H-4, C-4, H-3, C-3, H-2, C-2]
+
+Player 1's Hand: [D-A, D-K, D-Q, D-J, D-10, D-9, D-8, D-7, D-6, D-5, D-4, D-3, D-2, H-A, H-K, H-Q, H-J, H-10, H-9, H-8, H-7, H-6, H-5, H-4, H-3, H-2]
+Player 2's Hand: [S-A, S-K, S-Q, S-J, S-10, S-9, S-8, S-7, S-6, S-5, S-4, S-3, S-2, C-A, C-K, C-Q, C-J, C-10, C-9, C-8, C-7, C-6, C-5, C-4, C-3, C-2]
+
+Round 1 Top Cards Played: [D-A, S-A]
+Player 1's Cards in Hand: [D-K, D-Q, D-J, D-10, D-9, D-8, D-7, D-6, D-5, D-4, D-3, D-2, H-A, H-K, H-Q, H-J, H-10, H-9, H-8, H-7, H-6, H-5, H-4, H-3, H-2]
+Player 2's Cards in Hand: [S-K, S-Q, S-J, S-10, S-9, S-8, S-7, S-6, S-5, S-4, S-3, S-2, C-A, C-K, C-Q, C-J, C-10, C-9, C-8, C-7, C-6, C-5, C-4, C-3, C-2]
+Winner of Round 1: Player 1
+Winner's deck (Player 1) - [D-K, D-Q, D-J, D-10, D-9, D-8, D-7, D-6, D-5, D-4, D-3, D-2, H-A, H-K, H-Q, H-J, H-10, H-9, H-8, H-7, H-6, H-5, H-4, H-3, H-2, D-A, S-A]
+
+```
+
+### Solitaire
+
+```text
+==================== Solitaire ====================
+Foundation Zone
+♠       ♣       ♥       ♦       
+Empty   Empty   Empty   Empty   
+
+Manoeuvre Tableau
+---------------------------------------------------
+D-A     XX      XX      XX      XX      XX      XX      
+        D-7     XX      XX      XX      XX      XX      
+                H-A     XX      XX      XX      XX      
+                        H-9     XX      XX      XX      
+                                H-5     XX      XX      
+                                        H-2     XX      
+                                                S-K     
+---------------------------------------------------
+Talon
+[XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX, XX]
+Talon Waste
+[]
+==================================================
+```
 
 ---
 
@@ -345,7 +406,7 @@ The primary architectural goal is to keep the **game logic independent** of the 
 - Follow an object-oriented and modular design
 
 ### War Card Game
-
+[War Card Game Specifications](https://svicomph-my.sharepoint.com/:w:/g/personal/mlactaoen_svi_com_ph/IQBkXYVl-FbeTpr3sXhMpyQiAUk1XL2-M5A6yQbAcExp-rs?e=XExCBf&wdExp=TEAMS-TREATMENT&web=1&TeamsCID=e7b0533d-9d15-4564-9710-349089f3b02a&linkOpenTime=1784247721133)
 - Supports **2–8 players**
 - Reads an ordered deck from `input.txt`
 - Performs the specified perfect shuffle algorithm
@@ -355,20 +416,40 @@ The primary architectural goal is to keep the **game logic independent** of the 
 - Highest-ranked card wins the round
 - Winning player collects all played cards, placing the winning card on top of all cards played but placed at the bottom of the winning player's hand
 - Game continues until one player owns all cards
-- Link to specs: [War Card Game Specs](https://svicomph-my.sharepoint.com/:w:/g/personal/mlactaoen_svi_com_ph/IQBkXYVl-FbeTpr3sXhMpyQiAUk1XL2-M5A6yQbAcExp-rs?e=XExCBf&wdExp=TEAMS-TREATMENT&web=1&TeamsCID=e7b0533d-9d15-4564-9710-349089f3b02a&linkOpenTime=1784247721133)
 
-### Solitaire
+### Solitaire 
+[Solitaire Specifications](https://svicomph-my.sharepoint.com/:w:/g/personal/mlactaoen_svi_com_ph/IQAN3Ad6vJnOT6so96L3U0VnAUxRdRejPBWxOOkTjuBBIQ0?e=CJYwdm&wdExp=TEAMS-TREATMENT&web=1&TeamsCID=b7a17a71-dc57-4464-a776-1660e5508203&linkOpenTime=1784249595940)
+- Implements an automatic terminal-based Klondike Solitaire solver
+- Uses seven tableau piles, four foundation piles, one talon, and one waste pile
+- Deals the initial tableau using the ordered cards from `input.txt`
+- Places all remaining cards into the talon
+- Keeps tableau cards face down except for the exposed card of each pile
+- Draws up to three cards from the talon at a time
+- Builds foundation piles by suit in ascending rank order, from Ace to King
+- Builds tableau piles in descending rank order with alternating colors
+- Allows movement of a face-up tableau sequence
+- Does not move cards from a foundation back to the tableau
+- Searches for moves automatically from left to right
+- Does not guarantee an optimal solution
 
-- Currently under development
-- Will be implemented using the shared card game framework
-- Link to specs: [Solitaire](https://svicomph-my.sharepoint.com/:w:/g/personal/mlactaoen_svi_com_ph/IQAN3Ad6vJnOT6so96L3U0VnAUxRdRejPBWxOOkTjuBBIQ0?e=CJYwdm&wdExp=TEAMS-TREATMENT&web=1&TeamsCID=b7a17a71-dc57-4464-a776-1660e5508203&linkOpenTime=1784249595940)
+#### Solitaire Move Priority
+
+The automatic solver searches for moves in the following order:
+
+1. Tableau → Foundation
+2. Tableau → Tableau
+3. Waste → Foundation
+4. Waste → Tableau
+5. Draw up to three cards from Talon → Waste
+6. Recycle Waste → Talon
+7. End the game when no further progress is possible
 
 ---
 
 ## To do
 
 ### War Card Game
-- [ ] Additional code cleanup and refactoring
+- [X] Additional code cleanup and refactoring
 - [ ] Improve separation of game logic and presentation
 - [ ] Add comprehensive JavaDoc comments
 
@@ -380,17 +461,18 @@ The primary architectural goal is to keep the **game logic independent** of the 
 - [x] Create TalonPile
 - [x] Create WastePile
 - [x] Deal the initial opening tableau
-- [ ] Display the table set of cards
-- [ ] Draw Stock → Waste
-- [ ] Recycle Waste → Stock
-- [ ] Implement Tableau validation
-- [ ] Implement Foundation validation
-- [ ] Implement move execution
-- [ ] Implement win detection
-- [ ] Implement no-progress or cycle detection
+- [X] Display the table set of cards
+- [X] Draw Stock → Waste
+- [X] Recycle Waste → Stock
+- [X] Implement Tableau validation
+- [X] Implement Foundation validation
+- [X] Implement move execution
+- [X] Implement win detection
+- [X] Implement no-progress or cycle detection
 
 ### General
 - [ ] Improve project documentation
 - [ ] Add unit tests
 - [ ] Support additional shuffle algorithms
 - [ ] Expand reusable framework for future card games
+
