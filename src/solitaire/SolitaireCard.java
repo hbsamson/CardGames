@@ -37,8 +37,12 @@ public class SolitaireCard {
         return card.getSuit();
     }
 
+    public String toTableauString() {
+        return faceUp ? card.toString() : " X ";
+    }
+
     @Override
     public String toString() {
-        return faceUp ? card.toString() : " X ";
+        return faceUp ? card.toString() : "XX";
     }
 }

@@ -60,15 +60,55 @@ public class SolitaireGame implements Game {
 
             boolean moveMadeThisIteration = false;
 
-            /*
-             * 1. Search tableau-to-foundation moves.
-             */
-//            if (nonProgressTableauMoves
-//                    < MAX_NON_PROGRESS_TABLEAU_MOVES) {
-//
-//                SolitaireMoveResult result =
-//                        tryTableauToFoundation();
-//
+            // Permanent progress
+            if (tryTableauToFoundation()) {
+                progressMadeThisCycle = true;
+                nonProgressTableauMoves = 0;
+                displayTable();
+                continue;
+            }
+
+            // Tableau rearrangement
+            if (nonProgressTableauMoves < MAX_NON_PROGRESS_TABLEAU_MOVES && tryTableauToTableau()) {
+                nonProgressTableauMoves++;
+                displayTable();
+                continue;
+            }
+
+            // Permanent progress
+            if (tryWasteToFoundation()) {
+                progressMadeThisCycle = true;
+                nonProgressTableauMoves = 0;
+                displayTable();
+                continue;
+            }
+
+            if (tryWasteToTableau()) {
+                nonProgressTableauMoves = 0;
+                displayTable();
+                continue;
+            }
+
+            if (!table.getTalon().isEmpty()) {
+                drawFromTalon();
+                displayTable();
+                continue;
+            }
+
+            if (progressMadeThisCycle && !table.getWaste().isEmpty()) {
+                recycleWasteIntoTalon();
+                progressMadeThisCycle = false;
+                nonProgressTableauMoves = 0;
+                displayTable();
+                continue;
+            }
+
+            lost = true;
+
+            // 1. Search tableau-to-foundation moves.
+//            if (nonProgressTableauMoves < MAX_NON_PROGRESS_TABLEAU_MOVES) {
+//                SolitaireMoveResult result = tryTableauToFoundation();
+
 //                if (result.moved()) {
 //                    processMoveResult(result);
 //                    moveMadeThisIteration = true;
@@ -126,7 +166,7 @@ public class SolitaireGame implements Game {
 //                continue;
 //            }
 
-            lost = true;
+//            lost = true;
         }
 
         displayResult();
@@ -208,34 +248,32 @@ public class SolitaireGame implements Game {
         }
     }
 
-    private void moveRemainingCardsToTalon() {
-        // Implement according to your existing Deck methods.
-
+    private boolean tryTableauToFoundation() {
+        for (TableauPile pile : table.getTableau()) {
+            pile.revealBottomCard();
+        }
+        return false;
+    }
+//
+    private boolean tryTableauToTableau() {
+        return false;
     }
 
-//    private SolitaireMoveResult tryTableauToFoundation() {
-//        return SolitaireMoveResult.noMove();
-//    }
-//
-//    private SolitaireMoveResult tryTableauToTableau() {
-//        return SolitaireMoveResult.noMove();
-//    }
-//
-//    private SolitaireMoveResult tryWasteToFoundation() {
-//        return SolitaireMoveResult.noMove();
-//    }
-//
-//    private SolitaireMoveResult tryWasteToTableau() {
-//        return SolitaireMoveResult.noMove();
-//    }
-//
-//    private void drawFromTalon() {
-//        table.drawFromTalon(DRAW_COUNT);
-//    }
-//
-//    private void recycleWasteIntoTalon() {
-//        table.recycleWaste();
-//    }
+    private boolean tryWasteToFoundation() {
+        return false;
+    }
+
+    private boolean tryWasteToTableau() {
+        return false;
+    }
+
+    private void drawFromTalon() {
+        table.drawFromTalon(DRAW_COUNT);
+    }
+
+    private void recycleWasteIntoTalon() {
+        table.recycleWaste();
+    }
 
     private void displayTable() {
         System.out.println("\n==================== Solitaire ====================");
