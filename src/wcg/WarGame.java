@@ -7,6 +7,7 @@ import io.DeckFileReader;
 import shuffle.PerfectShuffle;
 import shuffle.Shuffle;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -15,6 +16,7 @@ public class WarGame implements Game {
     public static String NO_WINNER = "none";
     public record Winner(String name, List<Card> deck) {}
     private final ConsoleInput input;
+    private boolean initialized = false;
 
     // Game state shared by initialize(), play(), and displayResult()
     private List<Card> orderedDeck;
@@ -39,7 +41,7 @@ public class WarGame implements Game {
         // Read, shuffle and deal cards
         System.out.println("\n=== Hello, welcome to Hannah's War Card Game ===");
 
-        // reads inOrder.txt for in order listing of cards
+        // reads input.txt for in order listing of cards
         String ordered_path = "src\\decks\\input.txt";
         String ordered_data = DeckFileReader.readFileAsString(ordered_path);
         String cleaned_ordered_data = ordered_data.replace("Initial card sequence: ", "");
@@ -53,20 +55,48 @@ public class WarGame implements Game {
         }
 
         // ask for path to input deck
-        String path = input.askFile();
-        String data = DeckFileReader.readFileAsString(ordered_path);
-        String input_data = data.replace("Initial card sequence: ", "");
-        StringTokenizer tokenizer = new StringTokenizer(input_data, ",");
+        String input_path = input.askFile();
+
+        // file check
+        File file = new File(input_path);
+        if (!file.exists()) {
+            System.out.println("File does not exist.");
+            return;
+        }
+        if (!file.isFile()) {
+            System.out.println("Path is not a file.");
+            return;
+        }
+
+        String cardRegex = "^[DHSC]-(A|[2-9]|10|J|Q|K)$";
+        String input_data = DeckFileReader.readFileAsString(input_path);
+        String cleaned_input_data = input_data.replace("Initial card sequence: ", "");
+        StringTokenizer tokenizer = new StringTokenizer(cleaned_input_data, ",");
 
         // placing cards (as tokens) into deck
         inputDeck = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
             String cardString = tokenizer.nextToken().trim();
+            if (!cardString.matches(cardRegex)) { // checking if token matches card regex
+                System.out.println("\nInvalid card: " + cardString);
+                System.out.println("Valid card format: <Suit>-<Rank>");
+                System.out.println("Examples: D-A (Ace of Diamonds), S-10 (10 of Spades), H-K (King of Hearts)");
+                System.out.println("Valid suits: C (Clubs), D (Diamonds), H (Hearts), S (Spades)");
+                System.out.println("Valid ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J (Jack), Q (Queen), K (King)");
+                return;
+            }
             inputDeck.add(Card.fromString(cardString));
         }
 
+        if (inputDeck.size() != 52) {
+            System.out.println("Deck must contain exactly 52 cards.");
+            return;
+        }
+
         // print path txt file deck
-        System.out.println("Deck from " + path + inputDeck.toString());
+        initialized = true;
+        System.out.println("Deck from " + input_path + ": ");
+        System.out.println(inputDeck.toString());
 
         // player count 2 <= n <= 8
         n = input.askPlayerCount();
@@ -111,6 +141,10 @@ public class WarGame implements Game {
     @Override
     public void play() {
         // Continue War rounds
+        if (!initialized) { // deck not initialized
+            return;
+        }
+
         while (!isGameOver()) {
             roundNumber += 1;
             winner = WarRound.gameRound(roundNumber, players, orderedDeck, shuffledDeck);
@@ -125,6 +159,11 @@ public class WarGame implements Game {
     @Override
     public void displayResult() {
         // Display War winner
+        if (!initialized) {
+            System.out.println("\n=== Game terminated due to invalid deck input ===");
+            return;
+        }
+
         System.out.println("\n===== " + winner.name().toUpperCase() + " IS THE WINNER!!! =====");
         System.out.println(winner.deck());
     }

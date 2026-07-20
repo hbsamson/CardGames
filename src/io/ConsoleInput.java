@@ -10,8 +10,8 @@ public class ConsoleInput implements AutoCloseable {
     }
 
     public String askFile() {
-        System.out.print("File path: ");
-        return scanner.next();
+        System.out.print("File path: src/decks/");
+        return "src/decks/" + scanner.next();
     }
 
     public int askPlayerCount() {
