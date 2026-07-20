@@ -7,11 +7,12 @@ import io.DeckFileReader;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static solitaire.SolitaireMoveType.TABLEAU_TO_TABLEAU;
 import static solitaire.SolitaireTable.TABLEAU_COUNT;
 
 public class SolitaireGame implements Game {
     private static final int DRAW_COUNT = 3;
-    private static final int MAX_NON_PROGRESS_TABLEAU_MOVES = 25;
+    private static final int MAX_NON_PROGRESS_TABLEAU_MOVES = 20;
     private final ConsoleInput input;
 
     private SolitaireTable table;
@@ -254,39 +255,120 @@ public class SolitaireGame implements Game {
                     SolitaireCard movedCard = stack.removeBottomCard();
                     zone.addCard(movedCard);
                     stack.revealBottomCard();
+                    lastMove = null;
                     return true;
                 }
             }
         }
         return false;
     }
-
     private boolean tryTableauToTableau() {
-        List<TableauPile> stack = table.getTableau();
+        List<TableauPile> tableau = table.getTableau();
 
+        // try bottom cards first
         for (int sourceIndex = 0; sourceIndex < TABLEAU_COUNT; sourceIndex++) {
-            TableauPile source = stack.get(sourceIndex);
+            TableauPile source = tableau.get(sourceIndex);
             SolitaireCard candidate = source.getBottomCard();
             if (candidate == null || !candidate.isFaceUp()) {
                 continue;
             }
+
+            int sourceCardIndex = source.size() - 1;
+            int sourceSize = source.size();
+
             for (int destinationIndex = 0; destinationIndex < TABLEAU_COUNT; destinationIndex++) {
-                if (sourceIndex == destinationIndex) { // skip same stack
+                // Do not move onto the same pile
+                if (sourceIndex == destinationIndex) {
                     continue;
                 }
 
-                TableauPile destination = stack.get(destinationIndex);
-                int sourceSize = source.size(); // for stopping king moving to another empty
-                if (destination.canAdd(candidate, sourceSize)) { // check if can add card
+                TableauPile destination = tableau.get(destinationIndex);
+                SolitaireMove proposedMove = new SolitaireMove(SolitaireMoveType.TABLEAU_TO_TABLEAU, sourceIndex, destinationIndex, sourceCardIndex);
+
+                // Prevent immediately reversing the previous move
+                if (proposedMove.reverses(lastMove)) {
+                    continue;
+                }
+
+                if (destination.canAdd(candidate, sourceSize)) {
                     SolitaireCard movedCard = source.removeBottomCard();
                     destination.addCard(movedCard);
-                    source.revealBottomCard(); // flip new bottom
+                    source.revealBottomCard();
+                    // Save this successful move
+                    lastMove = proposedMove;
                     return true;
                 }
             }
         }
+
+        // comparing top open card stack
+        for (int sourceIndex = 0; sourceIndex < TABLEAU_COUNT; sourceIndex++) {
+            TableauPile source = tableau.get(sourceIndex);
+            SolitaireCard candidate = source.getFirstFaceUpCard();
+            int candidateIndex = source.getFirstFaceUpIndex();
+            if (candidate == null || !candidate.isFaceUp()) {
+                continue;
+            }
+
+            int sourceCardIndex = source.size() - 1;
+            int sourceSize = source.size();
+
+            for (int destinationIndex = 0; destinationIndex < TABLEAU_COUNT; destinationIndex++) {
+                // Do not move onto the same pile
+                if (sourceIndex == destinationIndex) {
+                    continue;
+                }
+
+                TableauPile destination = tableau.get(destinationIndex);
+                SolitaireMove proposedMove = new SolitaireMove(SolitaireMoveType.TABLEAU_TO_TABLEAU, sourceIndex, destinationIndex, sourceCardIndex);
+
+                // Prevent immediately reversing the previous move
+                if (proposedMove.reverses(lastMove)) {
+                    continue;
+                }
+
+                if (destination.canAdd(candidate, sourceSize)) {
+                    List<SolitaireCard> movedCards = source.removeCardsFrom(candidateIndex);
+                    destination.addCards(movedCards);
+                    source.revealBottomCard();
+                    // Save this successful move
+                    lastMove = proposedMove;
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
+//    private boolean tryTableauToTableau() {
+//        List<TableauPile> stack = table.getTableau();
+//        SolitaireMove(TABLEAU_TO_TABLEAU,
+//        int sourcePile,
+//        int destinationPile,
+//        int sourceCardIndex
+//        for (int sourceIndex = 0; sourceIndex < TABLEAU_COUNT; sourceIndex++) {
+//            TableauPile source = stack.get(sourceIndex);
+//            SolitaireCard candidate = source.getBottomCard();
+//            if (candidate == null || !candidate.isFaceUp()) {
+//                continue;
+//            }
+//            for (int destinationIndex = 0; destinationIndex < TABLEAU_COUNT; destinationIndex++) {
+//                if (sourceIndex == destinationIndex) { // skip same stack
+//                    continue;
+//                }
+//
+//                TableauPile destination = stack.get(destinationIndex);
+//                int sourceSize = source.size(); // for stopping king moving to another empty
+//                if (destination.canAdd(candidate, sourceSize)) { // check if can add card
+//                    SolitaireCard movedCard = source.removeBottomCard();
+//                    destination.addCard(movedCard);
+//                    source.revealBottomCard(); // flip new bottom
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
     private boolean tryWasteToFoundation() {
         WastePile talon_open = table.getWaste();
@@ -299,6 +381,7 @@ public class SolitaireGame implements Game {
             if (zone.canAdd(candidate)) {
                 SolitaireCard movedCard = talon_open.removeTopCard();
                 zone.addCard(movedCard);
+                lastMove = null;
                 return true;
             }
         }
@@ -319,6 +402,7 @@ public class SolitaireGame implements Game {
             if (destination.canAdd(candidate, 0)) { // check if can add card
                 SolitaireCard movedCard = talon_open.removeTopCard();
                 destination.addCard(movedCard);
+                lastMove = null;
                 return true;
             }
         }

@@ -106,4 +106,24 @@ public class TableauPile {
 
         return cards.get(cards.size() - 1);
     }
+
+    public int getFirstFaceUpIndex() {
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i).isFaceUp()) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    public SolitaireCard getFirstFaceUpCard() {
+        int index = getFirstFaceUpIndex();
+
+        if (index == -1) {
+            return null;
+        }
+
+        return cards.get(index);
+    }
 }
