@@ -24,22 +24,22 @@ public class FoundationPile {
             return false;
         }
 
+        Suit candidateSuit = candidate.getCard().getSuit();
+        // Candidate must always match this foundation's fixed suit
+        if (candidateSuit != suit) {
+            return false;
+        }
+
         if (cards.isEmpty()) {
             return candidate.getCard().getRank() == Rank.ACE;
         }
 
         SolitaireCard top = peekTopCard();
 
-        Suit topSuit = top.getCard().getSuit();
-        Suit candidateSuit =
-                candidate.getCard().getSuit();
-
         int topRank = top.getCard().getRank().getValue();
-        int candidateRank =
-                candidate.getCard().getRank().getValue();
+        int candidateRank = candidate.getCard().getRank().getValue();
 
-        return topSuit == candidateSuit
-                && candidateRank == topRank + 1;
+        return candidateRank == topRank + 1;
     }
 
     public void addCard(SolitaireCard card) {

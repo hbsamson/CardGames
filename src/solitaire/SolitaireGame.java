@@ -1,11 +1,10 @@
 package solitaire;
 
-import core.Card;
-import core.Deck;
-import core.Game;
+import core.*;
 import io.ConsoleInput;
 import io.DeckFileReader;
 
+import java.util.List;
 import java.util.StringTokenizer;
 
 import static solitaire.SolitaireTable.TABLEAU_COUNT;
@@ -27,7 +26,6 @@ public class SolitaireGame implements Game {
      */
     private boolean progressMadeThisCycle;
 
-    private boolean won;
     private boolean lost;
 
     public SolitaireGame(ConsoleInput input) {
@@ -35,7 +33,6 @@ public class SolitaireGame implements Game {
         this.lastMove = null;
         this.nonProgressTableauMoves = 0;
         this.progressMadeThisCycle = false;
-        this.won = false;
         this.lost = false;
     }
 
@@ -54,7 +51,7 @@ public class SolitaireGame implements Game {
     public void play() {
         while (!isGameOver()) {
             if (table.areFoundationsComplete()) {
-                won = true;
+                lost = false;
                 break;
             }
 
@@ -168,8 +165,6 @@ public class SolitaireGame implements Game {
 
 //            lost = true;
         }
-
-        displayResult();
     }
 
     @Override
@@ -181,7 +176,7 @@ public class SolitaireGame implements Game {
     public void displayResult() {
         displayTable();
 
-        if (won) {
+        if (!lost) {
             System.out.println("\nGame Complete!");
         } else {
             System.out.println("\nGame Lost!");
@@ -211,8 +206,8 @@ public class SolitaireGame implements Game {
     private void dealInitialTableau() throws Exception {
         // Implement according to your existing Deck methods
         // ask for path to input deck
-        String path = "src\\decks\\input.txt";
-//        String path = input.askFile();
+//        String path = "src\\decks\\input.txt";
+        String path = input.askFile();
         String data = DeckFileReader.readFileAsString(path);
         String input_data = data.replace("Initial card sequence: ", "");
         StringTokenizer tokenizer = new StringTokenizer(input_data, ",");
@@ -237,9 +232,9 @@ public class SolitaireGame implements Game {
             }
         }
 
-        // flip all bottom cards to faceup
-        for (TableauPile pile : table.getTableau()) {
-            pile.revealBottomCard();
+        // flip all bottom cards to face up
+        for (TableauPile stack : table.getTableau()) {
+            stack.revealBottomCard();
         }
 
         // add excess to talon
@@ -249,21 +244,85 @@ public class SolitaireGame implements Game {
     }
 
     private boolean tryTableauToFoundation() {
-        for (TableauPile pile : table.getTableau()) {
-            pile.revealBottomCard();
+        for (TableauPile stack : table.getTableau()) {
+            SolitaireCard candidate = stack.getBottomCard();
+            if (candidate == null || !candidate.isFaceUp()) {
+                continue;
+            }
+            for (FoundationPile zone : table.getFoundations()) {
+                if (zone.canAdd(candidate)) {
+                    SolitaireCard movedCard = stack.removeBottomCard();
+                    zone.addCard(movedCard);
+                    stack.revealBottomCard();
+                    return true;
+                }
+            }
         }
         return false;
     }
-//
+
     private boolean tryTableauToTableau() {
+        List<TableauPile> stack = table.getTableau();
+
+        for (int sourceIndex = 0; sourceIndex < TABLEAU_COUNT; sourceIndex++) {
+            TableauPile source = stack.get(sourceIndex);
+            SolitaireCard candidate = source.getBottomCard();
+            if (candidate == null || !candidate.isFaceUp()) {
+                continue;
+            }
+            for (int destinationIndex = 0; destinationIndex < TABLEAU_COUNT; destinationIndex++) {
+                if (sourceIndex == destinationIndex) { // skip same stack
+                    continue;
+                }
+
+                TableauPile destination = stack.get(destinationIndex);
+                int sourceSize = source.size(); // for stopping king moving to another empty
+                if (destination.canAdd(candidate, sourceSize)) { // check if can add card
+                    SolitaireCard movedCard = source.removeBottomCard();
+                    destination.addCard(movedCard);
+                    source.revealBottomCard(); // flip new bottom
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
     private boolean tryWasteToFoundation() {
+        WastePile talon_open = table.getWaste();
+        SolitaireCard candidate = talon_open.peekTopCard();
+        if (candidate == null || !candidate.isFaceUp()) {
+            return false;
+        }
+
+        for (FoundationPile zone : table.getFoundations()) {
+            if (zone.canAdd(candidate)) {
+                SolitaireCard movedCard = talon_open.removeTopCard();
+                zone.addCard(movedCard);
+                return true;
+            }
+        }
+
         return false;
     }
 
     private boolean tryWasteToTableau() {
+        WastePile talon_open = table.getWaste();
+        SolitaireCard candidate = talon_open.peekTopCard();
+        if (candidate == null || !candidate.isFaceUp()) {
+            return false;
+        }
+
+        List<TableauPile> stack = table.getTableau();
+        for (int destinationIndex = 0; destinationIndex < TABLEAU_COUNT; destinationIndex++) {
+            TableauPile destination = stack.get(destinationIndex);
+            if (destination.canAdd(candidate, 0)) { // check if can add card
+                SolitaireCard movedCard = talon_open.removeTopCard();
+                destination.addCard(movedCard);
+                return true;
+            }
+        }
+
         return false;
     }
 
