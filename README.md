@@ -476,3 +476,8 @@ The automatic solver searches for moves in the following order:
 - [ ] Support additional shuffle algorithms
 - [ ] Expand reusable framework for future card games
 
+---
+
+### Sources
+
+[Solitaire Cards](https://opengameart.org/content/playing-cards-vector-png)
