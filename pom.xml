@@ -30,6 +30,12 @@
         <!-- Keeps your existing src/core, src/wcg, etc. structure -->
         <sourceDirectory>src</sourceDirectory>
 
+        <resources>
+            <resource>
+                <directory>resources</directory>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
