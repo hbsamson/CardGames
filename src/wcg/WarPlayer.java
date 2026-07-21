@@ -46,4 +46,14 @@ public class WarPlayer extends Player {
     public String getHandAsString() {
         return hand.asList().toString();
     }
+
+    private Card lastPlayedCard;
+
+    public String getName() {
+        return name;
+    }
+
+    public Card getLastPlayedCard() {
+        return lastPlayedCard;
+    }
 }

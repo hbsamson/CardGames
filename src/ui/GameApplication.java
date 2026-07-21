@@ -1,5 +1,6 @@
 package ui;
 
+import io.ConsoleInput;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -7,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import wcg.WarGame;
 
 public class GameApplication extends Application {
 
@@ -18,7 +20,7 @@ public class GameApplication extends Application {
         Button solitaireButton = new Button("Solitaire");
 
         warButton.setOnAction(event ->
-                System.out.println("Open War Card Game")
+                openWarGame(stage)
         );
 
         solitaireButton.setOnAction(event ->
@@ -43,5 +45,21 @@ public class GameApplication extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void openWarGame(Stage stage) {
+        WarGame game = new WarGame(new ConsoleInput());
+        WarView view = new WarView();
+
+        new WarController(game, view);
+
+        Scene scene = new Scene(
+                view.getRoot(),
+                1100,
+                750
+        );
+
+        stage.setTitle("War Card Game");
+        stage.setScene(scene);
     }
 }

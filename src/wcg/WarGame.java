@@ -141,14 +141,11 @@ public class WarGame implements Game {
     @Override
     public void play() {
         // Continue War rounds
-        if (!initialized) { // deck not initialized
-            return;
+        while (!isGameOver()) {
+            playNextRound();
         }
 
-        while (!isGameOver()) {
-            roundNumber += 1;
-            winner = WarRound.gameRound(roundNumber, players, orderedDeck, shuffledDeck);
-        }
+        displayResult();
     }
     @Override
     public boolean isGameOver() {
@@ -170,5 +167,32 @@ public class WarGame implements Game {
 
     public static List<Card> getExcessCards() {
         return excessCards;
+    }
+
+    public int getRoundNumber() {
+        return roundNumber;
+    }
+
+    public List<WarPlayer> getPlayers() {
+        return List.copyOf(players);
+    }
+
+    public Winner getWinner() {
+        return winner;
+    }
+
+    public void playNextRound() {
+        if (!initialized) { // deck not initialized
+            return;
+        }
+
+        if (isGameOver()) {
+            return;
+        }
+
+        while (!isGameOver()) {
+            roundNumber += 1;
+            winner = WarRound.gameRound(roundNumber, players, orderedDeck, shuffledDeck);
+        }
     }
 }
