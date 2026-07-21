@@ -55,8 +55,8 @@ public class WarGame implements Game {
         }
 
         // ask for path to input deck
-        String input_path = input.askFile();
-
+//        String input_path = input.askFile();
+        String input_path = "src/decks/input.txt";
         // file check
         File file = new File(input_path);
         if (!file.exists()) {
@@ -99,10 +99,11 @@ public class WarGame implements Game {
         System.out.println(inputDeck.toString());
 
         // player count 2 <= n <= 8
-        n = input.askPlayerCount();
-
+//        n = input.askPlayerCount();
+        n = 2;
+        s = 1;
         // shuffle inputDeck
-        s = input.askShuffleCount();
+//        s = input.askShuffleCount();
         Shuffle shuffler = new PerfectShuffle();
         for (int i=0; i < s; i++) {
             shuffledDeck = shuffler.shuffle(inputDeck);
@@ -182,6 +183,7 @@ public class WarGame implements Game {
     }
 
     public void playNextRound() {
+        updateWinner();
         if (!initialized) { // deck not initialized
             return;
         }
@@ -190,9 +192,34 @@ public class WarGame implements Game {
             return;
         }
 
-        while (!isGameOver()) {
-            roundNumber += 1;
-            winner = WarRound.gameRound(roundNumber, players, orderedDeck, shuffledDeck);
+        roundNumber += 1;
+        WarRound.gameRound(
+                roundNumber,
+                players,
+                orderedDeck,
+                shuffledDeck
+        );
+
+
+        updateWinner();
+    }
+
+    private void updateWinner() {
+        WarPlayer remainingPlayer = null;
+        int activePlayers = 0;
+
+        for (WarPlayer player : players) {
+            if (player.hasCards()) {
+                activePlayers++;
+                remainingPlayer = player;
+            }
+        }
+
+        if (activePlayers == 1) {
+            this.winner = new Winner(
+                    remainingPlayer.getName(),
+                    List.copyOf(remainingPlayer.getHand().asList())
+            );
         }
     }
 }

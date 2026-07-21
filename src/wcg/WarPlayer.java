@@ -8,6 +8,7 @@ import java.util.Collection;
 
 public class WarPlayer extends Player {
     private final Deck hand;
+    private Card lastPlayedCard;
 
     public WarPlayer(int playerNumber) {
         super("Player " + playerNumber);
@@ -19,8 +20,13 @@ public class WarPlayer extends Player {
         hand = new Deck();
     }
 
+//    public Card playCard() {
+//        return hand.drawTopCard();
+//    }
+
     public Card playCard() {
-        return hand.drawTopCard();
+        lastPlayedCard = hand.drawTopCard(); // use your existing draw operation
+        return lastPlayedCard;
     }
 
     public void receiveCard(Card card) {
@@ -47,7 +53,6 @@ public class WarPlayer extends Player {
         return hand.asList().toString();
     }
 
-    private Card lastPlayedCard;
 
     public String getName() {
         return name;

@@ -55,8 +55,7 @@ public class GameApplication extends Application {
 
         Scene scene = new Scene(
                 view.getRoot(),
-                1100,
-                750
+                900, 650
         );
 
         stage.setTitle("War Card Game");

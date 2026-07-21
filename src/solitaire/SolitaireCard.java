@@ -9,13 +9,6 @@ public class SolitaireCard {
     private final Card card;
     private boolean faceUp;
 
-    CardView cardView = new CardView();
-
-    cardView.showCard(
-            solitaireCard.getCard(),
-            solitaireCard.isFaceUp()
-            );
-
     public SolitaireCard(Card card) {
         this.card = card;
         this.faceUp = false;
