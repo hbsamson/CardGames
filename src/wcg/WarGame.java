@@ -101,12 +101,13 @@ public class WarGame implements Game {
         // player count 2 <= n <= 8
 //        n = input.askPlayerCount();
         n = 2;
-        s = 1;
+//        s = 2;
         // shuffle inputDeck
-//        s = input.askShuffleCount();
+        s = input.askShuffleCount();
         Shuffle shuffler = new PerfectShuffle();
-        for (int i=0; i < s; i++) {
-            shuffledDeck = shuffler.shuffle(inputDeck);
+        shuffledDeck = shuffler.shuffle(inputDeck);
+        for (int i=0; i < s-1; i++) {
+            shuffledDeck = shuffler.shuffle(shuffledDeck);
         }
 
         System.out.println("\nShuffled Deck:");
