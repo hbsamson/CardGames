@@ -42,7 +42,7 @@ public class WarGame implements Game {
         System.out.println("\n=== Hello, welcome to Hannah's War Card Game ===");
 
         // reads input.txt for in order listing of cards
-        String ordered_path = "src\\decks\\input.txt";
+        String ordered_path = "src/decks/input.txt";
         String ordered_data = DeckFileReader.readFileAsString(ordered_path);
         String cleaned_ordered_data = ordered_data.replace("Initial card sequence: ", "");
         String[] string_deck = cleaned_ordered_data.split(","); // convert to list of strings
@@ -55,8 +55,8 @@ public class WarGame implements Game {
         }
 
         // ask for path to input deck
-//        String input_path = input.askFile();
-        String input_path = "src/decks/input.txt";
+        String input_path = input.askFile();
+        // String input_path = "src/decks/input.txt";
         // file check
         File file = new File(input_path);
         if (!file.exists()) {
@@ -98,10 +98,13 @@ public class WarGame implements Game {
         System.out.println("Deck from " + input_path + ": ");
         System.out.println(inputDeck.toString());
 
+        // uncomment for quick testing
+        // n = 2;
+        // s = 2;
+
         // player count 2 <= n <= 8
-//        n = input.askPlayerCount();
-        n = 2;
-//        s = 2;
+        n = input.askPlayerCount();
+        
         // shuffle inputDeck
         s = input.askShuffleCount();
         Shuffle shuffler = new PerfectShuffle();
@@ -134,9 +137,11 @@ public class WarGame implements Game {
         }
 
         System.out.println();
+        System.out.println("===================================================");        
         for (WarPlayer player : players) {
             System.out.println(player.getName() + "'s Hand: " + player.getHandAsString());
         }
+        System.out.println("===================================================");
 
     }
 

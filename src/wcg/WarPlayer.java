@@ -20,12 +20,8 @@ public class WarPlayer extends Player {
         hand = new Deck();
     }
 
-//    public Card playCard() {
-//        return hand.drawTopCard();
-//    }
-
     public Card playCard() {
-        lastPlayedCard = hand.drawTopCard(); // use your existing draw operation
+        lastPlayedCard = hand.drawTopCard();
         return lastPlayedCard;
     }
 

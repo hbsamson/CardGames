@@ -6,9 +6,12 @@ import io.ConsoleInput;
 public class Main {
     public static void main(String[] args) throws Exception {
         try (ConsoleInput input = new ConsoleInput()) {
-            System.out.println("=== Hannah's Card Games ===");
-            System.out.println("[1] War");
-            System.out.println("[2] Solitaire");
+            System.out.println("╔══════════════════════════════╗");
+            System.out.println("║     HANNAH'S CARD GAMES      ║");
+            System.out.println("╠══════════════════════════════╣");
+            System.out.println("║  [1] War                     ║");
+            System.out.println("║  [2] Solitaire               ║");
+            System.out.println("╚══════════════════════════════╝");
 
             int choice = input.askMenuChoice();
 
