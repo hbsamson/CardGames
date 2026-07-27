@@ -55,4 +55,21 @@ public class Deck {
     public List<Card> asList() {
         return new ArrayList<>(cards);
     }
+
+    public void printed() {
+        List<Card> deck = new ArrayList<>(cards);
+
+        for (int i = 0; i < deck.size(); i++) {
+            System.out.printf("%-4s", deck.get(i).getSuit().getSymbol()+deck.get(i).getRank().getSymbol());
+
+            if ((i + 1) % 13 == 0) {
+                System.out.println();
+            }
+        }
+
+        if (deck.size() % 13 != 0) {
+            System.out.println();
+        }
+
+    }
 }

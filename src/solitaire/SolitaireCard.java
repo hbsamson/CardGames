@@ -3,7 +3,6 @@ package solitaire;
 import core.Card;
 import core.Rank;
 import core.Suit;
-import ui.CardView;
 
 public class SolitaireCard {
     private final Card card;

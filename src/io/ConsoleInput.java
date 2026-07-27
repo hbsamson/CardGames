@@ -1,6 +1,7 @@
 package io;
 
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class ConsoleInput implements AutoCloseable {
     private final Scanner scanner;
@@ -10,27 +11,42 @@ public class ConsoleInput implements AutoCloseable {
     }
 
     public String askFile() {
-        System.out.print("File path: src/decks/");
+        System.out.print("\nFile path: src/decks/");
         return "src/decks/" + scanner.next();
     }
 
     public int askPlayerCount() {
-        int n;
+        int n = 0;
 
         do {
-            System.out.print("Enter number of players (2-8): ");
-            n = scanner.nextInt();
+            try {
+                System.out.print("Enter number of players (2-8): ");
+                n = scanner.nextInt();
+                if (n < 2 || n > 8) {
+                    System.out.println("\tInvalid input. Please enter number within 2 to 8.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("\tInvalid input. Please enter a number.");
+                scanner.nextLine(); // discard invalid input
+            }
         } while (n < 2 || n > 8);
-
+        
         return n;
     }
 
     public int askShuffleCount() {
-        int s;
-
+        int s = -1;
         do {
-            System.out.print("Enter shuffle count (>0): ");
-            s = scanner.nextInt();
+            try {
+                System.out.print("Enter shuffle count (0+): "); s = scanner.nextInt();
+                s = scanner.nextInt();
+                if (s < 0) {
+                    System.out.println("\tInvalid input. Please enter a positive number.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("\tInvalid input. Please enter a number.");
+                scanner.nextLine(); // discard invalid input
+            }
         } while (s <= 0);
 
         return s;
@@ -48,8 +64,15 @@ public class ConsoleInput implements AutoCloseable {
     }
 
     public int askMenuChoice() {
-        System.out.print("Choose a game: ");
-        return scanner.nextInt();
+        while (true) {
+            try {
+                System.out.print("Choose a game: ");
+                return scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("\tInvalid input. Please enter a number.");
+                scanner.nextLine(); // discard invalid input
+            }
+        }
     }
 
     public void close() {
