@@ -38,10 +38,10 @@ public class ConsoleInput implements AutoCloseable {
         int s = -1;
         do {
             try {
-                System.out.print("Enter shuffle count (0+): "); s = scanner.nextInt();
+                System.out.print("Enter shuffle count (more than 0): ");
                 s = scanner.nextInt();
-                if (s < 0) {
-                    System.out.println("\tInvalid input. Please enter a positive number.");
+                if (s <= 0) {
+                    System.out.println("\tInvalid input. Please enter a number more than 0.");
                 }
             } catch (InputMismatchException e) {
                 System.out.println("\tInvalid input. Please enter a number.");

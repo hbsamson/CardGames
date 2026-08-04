@@ -1,6 +1,7 @@
 package wcg;
 
 import core.Card;
+import core.Deck;
 import core.Game;
 import io.ConsoleInput;
 import io.DeckFileReader;
@@ -8,6 +9,10 @@ import shuffle.PerfectShuffle;
 import shuffle.Shuffle;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -54,27 +59,58 @@ public class WarGame implements Game {
             orderedDeck.add(Card.fromString(card));
         }
 
-        // ask for path to input deck
-        String input_path = input.askFile();
+        // uncomment for quick testing
+        // n = 2;
+        // s = 2;
         // String input_path = "src/decks/input.txt";
-        // file check
-        File file = new File(input_path);
-        if (!file.exists()) {
-            System.out.println("File does not exist.");
-            return;
+        System.out.println("Enter the path to a card deck file.");
+        System.out.println("If you omit the .txt extension, it will be added automatically.");
+        System.out.println("Example: src/decks/input");
+        System.out.println("\nAvailable deck files:");
+        File deckFolder = new File("src/decks");
+        File[] files = deckFolder.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".txt")) {
+                    System.out.println("- " + file.getName());
+                }
+            }
         }
-        if (!file.isFile()) {
-            System.out.println("Path is not a file.");
-            return;
+
+        String inputPath;
+        while (true) {
+            // ask for path to input deck
+            inputPath = input.askFile().trim();
+
+            // Append .txt if missing
+            if (!inputPath.toLowerCase().endsWith(".txt")) {
+                inputPath += ".txt";
+            }
+
+            File file = new File(inputPath);
+
+            // file checking if valid
+            if (!file.exists()) {
+                System.out.println("File does not exist. Please try again.");
+                continue;
+            }
+
+            if (!file.isFile()) {
+                System.out.println("Path is not a file. Please try again.");
+                continue;
+            }
+            break; // if valid file and path
         }
 
         String cardRegex = "^[DHSC]-(A|[2-9]|10|J|Q|K)$";
-        String input_data = DeckFileReader.readFileAsString(input_path);
+        String input_data = DeckFileReader.readFileAsString(inputPath);
         String cleaned_input_data = input_data.replace("Initial card sequence: ", "");
         StringTokenizer tokenizer = new StringTokenizer(cleaned_input_data, ",");
 
         // placing cards (as tokens) into deck
-        inputDeck = new ArrayList<>();
+//        inputDeck = new ArrayList<>();
+        Deck inputDeck = new Deck();
         while (tokenizer.hasMoreTokens()) {
             String cardString = tokenizer.nextToken().trim();
             if (!cardString.matches(cardRegex)) { // checking if token matches card regex
@@ -85,7 +121,7 @@ public class WarGame implements Game {
                 System.out.println("Valid ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J (Jack), Q (Queen), K (King)");
                 return;
             }
-            inputDeck.add(Card.fromString(cardString));
+            inputDeck.addToBottom(Card.fromString(cardString));
         }
 
         if (inputDeck.size() != 52) {
@@ -95,12 +131,9 @@ public class WarGame implements Game {
 
         // print path txt file deck
         initialized = true;
-        System.out.println("Deck from " + input_path + ": ");
-        System.out.println(inputDeck.toString());
-
-        // uncomment for quick testing
-        // n = 2;
-        // s = 2;
+        System.out.println("\nDeck from " + inputPath + ": ");
+//        System.out.println(inputDeck);
+        inputDeck.printed();
 
         // player count 2 <= n <= 8
         n = input.askPlayerCount();
@@ -108,13 +141,13 @@ public class WarGame implements Game {
         // shuffle inputDeck
         s = input.askShuffleCount();
         Shuffle shuffler = new PerfectShuffle();
-        shuffledDeck = shuffler.shuffle(inputDeck);
+        shuffledDeck = shuffler.shuffle(inputDeck.asList());
         for (int i=0; i < s-1; i++) {
             shuffledDeck = shuffler.shuffle(shuffledDeck);
         }
 
         System.out.println("\nShuffled Deck:");
-        System.out.println(shuffledDeck.toString());
+        printDeck(shuffledDeck);
 
         // initialize players
         players = new ArrayList<>();
@@ -137,7 +170,7 @@ public class WarGame implements Game {
         }
 
         System.out.println();
-        System.out.println("===================================================");        
+        System.out.println("===================================================");
         for (WarPlayer player : players) {
             System.out.println(player.getName() + "'s Hand: " + player.getHandAsString());
         }
@@ -151,8 +184,6 @@ public class WarGame implements Game {
         while (!isGameOver()) {
             playNextRound();
         }
-
-        displayResult();
     }
     @Override
     public boolean isGameOver() {
@@ -169,7 +200,46 @@ public class WarGame implements Game {
         }
 
         System.out.println("\n===== " + winner.name().toUpperCase() + " IS THE WINNER!!! =====");
-        System.out.println(winner.deck());
+        printDeck(winner.deck());
+        writeWinnerDeckToFile(winner.deck());
+    }
+
+    private void printDeck(List<Card> cards) {
+        if (cards == null || cards.isEmpty()) {
+            System.out.println("[]");
+            return;
+        }
+
+        Deck deckToPrint = new Deck(cards);
+        deckToPrint.printed();
+    }
+
+    private void writeWinnerDeckToFile(List<Card> cards) {
+        if (cards == null || cards.isEmpty()) {
+            return;
+        }
+
+        StringBuilder content = new StringBuilder();
+        for (Card card : cards) {
+            if (content.length() > 0) {
+                content.append(",");
+            }
+            content.append(card.getSuit().getCode()).append("-").append(card.getRank().getSymbol());
+        }
+
+        try {
+            Path outputPath = Path.of("src", "decks", "output.txt");
+            Files.createDirectories(outputPath.getParent());
+            Files.writeString(
+                    outputPath,
+                    content.toString(),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING,
+                    StandardOpenOption.WRITE
+            );
+        } catch (IOException e) {
+            System.out.println("Unable to write output file: " + e.getMessage());
+        }
     }
 
     public static List<Card> getExcessCards() {
@@ -205,7 +275,6 @@ public class WarGame implements Game {
                 orderedDeck,
                 shuffledDeck
         );
-
 
         updateWinner();
     }

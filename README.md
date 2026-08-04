@@ -108,7 +108,7 @@ src/
 ### Compile
 
 ```bash
-javac -d out src/**/*.java
+javac --release 25 -d out $(find src -name "*.java")
 ```
 
 ### Run
@@ -116,6 +116,8 @@ javac -d out src/**/*.java
 ```bash
 java -cp out Main
 ```
+
+> On a different machine, install JDK 25 and make sure your IDE or terminal is using that JDK. The project is written for Java 25, so using Java 8 or older will fail.
 
 > Ensure that `input.txt` is available in the expected location before running the program.
 
