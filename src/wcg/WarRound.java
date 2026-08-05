@@ -56,7 +56,9 @@ public class WarRound {
                 System.out.println("        " + playedCard);
             }
 
-            System.out.println("Winner of Round " + roundNumber + ": " + winnerRound.getName());
+            System.out.println(TerminalColors.green(
+                    "Winner of Round " + roundNumber + ": " + winnerRound.getName()
+            ));
 
             // add round cards to winner's deck
             winnerRound.receiveCards(roundCards);
@@ -65,7 +67,9 @@ public class WarRound {
                 if (player.hasCards()) {
                     System.out.println(player.getName() + "'s Cards in Hand: " + player.getHandAsString());
                 } else {
-                    System.out.println(player.getName() + " has no more cards");
+                    System.out.println(TerminalColors.red(
+                            player.getName() + " has no more cards"
+                    ));
                 }
             }
 

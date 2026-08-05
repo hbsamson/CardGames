@@ -3,6 +3,7 @@ package wcg;
 import core.Card;
 import core.Deck;
 import core.Game;
+import core.TerminalColors;
 import io.ConsoleInput;
 import io.DeckFileReader;
 import shuffle.PerfectShuffle;
@@ -203,7 +204,10 @@ public class WarGame implements Game {
             return;
         }
 
-        System.out.println("\n===== " + winner.name().toUpperCase() + " IS THE WINNER!!! =====");
+        System.out.println();
+        System.out.println(TerminalColors.green(
+                "===== " + winner.name().toUpperCase() + " IS THE WINNER!!! ====="
+        ));
         printDeck(winner.deck());
         writeWinnerDeckToFile(winner.deck());
     }

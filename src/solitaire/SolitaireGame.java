@@ -121,9 +121,15 @@ public class SolitaireGame implements Game {
         displayTable();
 
         if (!lost) {
-            System.out.println("\n===== Congrats! Game Complete! =========");
+            System.out.println();
+            System.out.println(TerminalColors.green(
+                    "===== Congrats! Game Complete! ========="
+            ));
         } else {
-            System.out.println("\n========= Oh noooo... Game Lost =========");
+            System.out.println();
+            System.out.println(TerminalColors.red(
+                    "========= Oh noooo... Game Lost ========="
+            ));
         }
     }
 
