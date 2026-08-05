@@ -4,6 +4,7 @@ import core.*;
 import io.ConsoleInput;
 import io.DeckFileReader;
 
+import java.io.File;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -20,11 +21,10 @@ public class SolitaireGame implements Game {
 
     private SolitaireMove lastMove;
     private int nonProgressTableauMoves;
+    private int moveNumber;
+    private String lastMoveDescription;
 
-    /*
-     * Persists for the entire pass through the talon.
-     * Do not reset at the start of every iteration.
-     */
+    // persists for the entire pass through the talon, does not reset at the start of every iteration
     private boolean progressMadeThisCycle;
 
     private boolean lost;
@@ -33,6 +33,8 @@ public class SolitaireGame implements Game {
         this.input = input;
         this.lastMove = null;
         this.nonProgressTableauMoves = 0;
+        this.moveNumber = 0;
+        this.lastMoveDescription = null;
         this.progressMadeThisCycle = false;
         this.lost = false;
     }
@@ -44,7 +46,10 @@ public class SolitaireGame implements Game {
 
         table = new SolitaireTable();
 
-        dealInitialTableau();
+        if (!dealInitialTableau()) {
+            lost = true;
+            return;
+        }
         displayTable();
     }
 
@@ -103,68 +108,6 @@ public class SolitaireGame implements Game {
 
             lost = true;
 
-            // 1. Search tableau-to-foundation moves.
-//            if (nonProgressTableauMoves < MAX_NON_PROGRESS_TABLEAU_MOVES) {
-//                SolitaireMoveResult result = tryTableauToFoundation();
-
-//                if (result.moved()) {
-//                    processMoveResult(result);
-//                    moveMadeThisIteration = true;
-//                }
-//
-//                if (moveMadeThisIteration) {
-//                    continue;
-//                }
-//
-//                /*
-//                 * 2. Search tableau-to-tableau moves.
-//                 */
-//                result = tryTableauToTableau();
-//
-//                if (result.moved()) {
-//                    processMoveResult(result);
-//                    continue;
-//                }
-//            }
-//
-//            /*
-//             * 3. Search waste moves.
-//             */
-//            SolitaireMoveResult wasteResult =
-//                    tryWasteToFoundation();
-//
-//            if (!wasteResult.moved()) {
-//                wasteResult = tryWasteToTableau();
-//            }
-//
-//            if (wasteResult.moved()) {
-//                processMoveResult(wasteResult);
-//                continue;
-//            }
-//
-//            /*
-//             * 4. Draw up to three cards.
-//             */
-//            if (!table.getTalon().isEmpty()) {
-//                drawFromTalon();
-//                displayBoard();
-//                continue;
-//            }
-//
-//            /*
-//             * 5. Talon is empty and no move is available.
-//             */
-//            if (progressMadeThisCycle) {
-//                recycleWasteIntoTalon();
-//
-//                progressMadeThisCycle = false;
-//                nonProgressTableauMoves = 0;
-//
-//                displayBoard();
-//                continue;
-//            }
-
-//            lost = true;
         }
     }
 
@@ -178,51 +121,80 @@ public class SolitaireGame implements Game {
         displayTable();
 
         if (!lost) {
-            System.out.println("\nGame Complete!");
+            System.out.println("\n===== Congrats! Game Complete! =========");
         } else {
-            System.out.println("\nGame Lost!");
+            System.out.println("\n========= Oh noooo... Game Lost =========");
         }
     }
 
-//    private void processMoveResult(SolitaireMoveResult result) {
-//        if (result.progressMade()) {
-//            progressMadeThisCycle = true;
-//            nonProgressTableauMoves = 0;
-//        }
-//
-//        if (result.move().type()
-//                == SolitaireMoveType.TABLEAU_TO_TABLEAU) {
-//
-//            if (!result.progressMade()) {
-//                nonProgressTableauMoves++;
-//            }
-//        } else {
-//            nonProgressTableauMoves = 0;
-//        }
-//
-//        lastMove = result.move();
-//        displayBoard();
-//    }
+    private boolean dealInitialTableau() throws Exception {
+        System.out.println("Enter the path to a card deck file.");
+        System.out.println("If you omit the .txt extension, it will be added automatically.");
+        System.out.println("Example: src/decks/input");
+        System.out.println("\nAvailable deck files:");
 
-    private void dealInitialTableau() throws Exception {
-        // Implement according to your existing Deck methods
-        // ask for path to input deck
-//        String path = "src\\decks\\input.txt";
-        String path = input.askFile();
-        String data = DeckFileReader.readFileAsString(path);
-        String input_data = data.replace("Initial card sequence: ", "");
-        StringTokenizer tokenizer = new StringTokenizer(input_data, ",");
+        File deckFolder = new File("src/decks");
+        File[] files = deckFolder.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile() && file.getName().endsWith(".txt")) {
+                    System.out.println("- " + file.getName());
+                }
+            }
+        }
+
+        String inputPath;
+        while (true) {
+            inputPath = input.askFile().trim();
+
+            if (!inputPath.toLowerCase().endsWith(".txt")) {
+                inputPath += ".txt";
+            }
+
+            File file = new File(inputPath);
+            if (!file.exists()) {
+                System.out.println("File does not exist. Please try again.");
+                continue;
+            }
+
+            if (!file.isFile()) {
+                System.out.println("Path is not a file. Please try again.");
+                continue;
+            }
+
+            break;
+        }
+
+        String cardRegex = "^[DHSC]-(A|[2-9]|10|J|Q|K)$";
+        String data = DeckFileReader.readFileAsString(inputPath);
+        String inputData = data.replace("Initial card sequence: ", "");
+        StringTokenizer tokenizer = new StringTokenizer(inputData, ",");
 
         // placing cards (as tokens) into deck
         Deck inputDeck = new Deck();
         while (tokenizer.hasMoreTokens()) {
             String cardString = tokenizer.nextToken().trim();
+
+            if (!cardString.matches(cardRegex)) {
+                System.out.println("\nInvalid card: " + cardString);
+                System.out.println("Valid card format: <Suit>-<Rank>");
+                System.out.println("Examples: D-A (Ace of Diamonds), S-10 (10 of Spades), H-K (King of Hearts)");
+                System.out.println("Valid suits: C (Clubs), D (Diamonds), H (Hearts), S (Spades)");
+                System.out.println("Valid ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J (Jack), Q (Queen), K (King)");
+                return false;
+            }
+
             inputDeck.addToBottom(Card.fromString(cardString));
         }
 
-        // print path txt file deck
-        System.out.println("Deck from " + path);
-        System.out.print(inputDeck.asList());
+        if (inputDeck.size() != 52) {
+            System.out.println("Deck must contain exactly 52 cards.");
+            return false;
+        }
+
+        System.out.println("\nDeck from " + inputPath + ": ");
+        inputDeck.printed();
 
         // add 1 per column, next row starts with next col
         int index = 0;
@@ -242,10 +214,13 @@ public class SolitaireGame implements Game {
         while (!inputDeck.isEmpty()) {
             table.getTalon().addCard(inputDeck.drawSolitaireTopCard());
         }
+
+        return true;
     }
 
     private boolean tryTableauToFoundation() {
-        for (TableauPile stack : table.getTableau()) {
+        for (int stackIndex = 0; stackIndex < TABLEAU_COUNT; stackIndex++) {
+            TableauPile stack = table.getTableau().get(stackIndex);
             SolitaireCard candidate = stack.getBottomCard();
             if (candidate == null || !candidate.isFaceUp()) {
                 continue;
@@ -256,6 +231,11 @@ public class SolitaireGame implements Game {
                     zone.addCard(movedCard);
                     stack.revealBottomCard();
                     lastMove = null;
+                    recordMove(
+                            "Move " + cardCode(movedCard)
+                                    + " from Stack " + (stackIndex + 1)
+                                    + " to " + foundationName(zone)
+                    );
                     return true;
                 }
             }
@@ -296,6 +276,11 @@ public class SolitaireGame implements Game {
                     source.revealBottomCard();
                     // Save this successful move
                     lastMove = proposedMove;
+                    recordMove(
+                            "Move " + cardCode(movedCard)
+                                    + " from Stack " + (sourceIndex + 1)
+                                    + " to Stack " + (destinationIndex + 1)
+                    );
                     return true;
                 }
             }
@@ -333,6 +318,11 @@ public class SolitaireGame implements Game {
                     source.revealBottomCard();
                     // Save this successful move
                     lastMove = proposedMove;
+                    recordMove(
+                            "Move " + cardCode(candidate)
+                                    + " from Stack " + (sourceIndex + 1)
+                                    + " to Stack " + (destinationIndex + 1)
+                    );
                     return true;
                 }
             }
@@ -340,35 +330,6 @@ public class SolitaireGame implements Game {
 
         return false;
     }
-//    private boolean tryTableauToTableau() {
-//        List<TableauPile> stack = table.getTableau();
-//        SolitaireMove(TABLEAU_TO_TABLEAU,
-//        int sourcePile,
-//        int destinationPile,
-//        int sourceCardIndex
-//        for (int sourceIndex = 0; sourceIndex < TABLEAU_COUNT; sourceIndex++) {
-//            TableauPile source = stack.get(sourceIndex);
-//            SolitaireCard candidate = source.getBottomCard();
-//            if (candidate == null || !candidate.isFaceUp()) {
-//                continue;
-//            }
-//            for (int destinationIndex = 0; destinationIndex < TABLEAU_COUNT; destinationIndex++) {
-//                if (sourceIndex == destinationIndex) { // skip same stack
-//                    continue;
-//                }
-//
-//                TableauPile destination = stack.get(destinationIndex);
-//                int sourceSize = source.size(); // for stopping king moving to another empty
-//                if (destination.canAdd(candidate, sourceSize)) { // check if can add card
-//                    SolitaireCard movedCard = source.removeBottomCard();
-//                    destination.addCard(movedCard);
-//                    source.revealBottomCard(); // flip new bottom
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
-//    }
 
     private boolean tryWasteToFoundation() {
         WastePile talon_open = table.getWaste();
@@ -382,6 +343,10 @@ public class SolitaireGame implements Game {
                 SolitaireCard movedCard = talon_open.removeTopCard();
                 zone.addCard(movedCard);
                 lastMove = null;
+                recordMove(
+                        "Move " + cardCode(movedCard)
+                                + " from Talon Waste to " + foundationName(zone)
+                );
                 return true;
             }
         }
@@ -403,6 +368,10 @@ public class SolitaireGame implements Game {
                 SolitaireCard movedCard = talon_open.removeTopCard();
                 destination.addCard(movedCard);
                 lastMove = null;
+                recordMove(
+                        "Move " + cardCode(movedCard)
+                                + " from Talon Waste to Stack " + (destinationIndex + 1)
+                );
                 return true;
             }
         }
@@ -411,11 +380,32 @@ public class SolitaireGame implements Game {
     }
 
     private void drawFromTalon() {
+        int drawCount = Math.min(DRAW_COUNT, table.getTalon().size());
         table.drawFromTalon(DRAW_COUNT);
+        recordMove(
+                "Draw " + drawCount + (drawCount == 1 ? " card" : " cards")
+                        + " from Talon to Talon Waste"
+        );
     }
 
     private void recycleWasteIntoTalon() {
         table.recycleWaste();
+        recordMove("Recycle Talon Waste into Talon");
+    }
+
+    private void recordMove(String description) {
+        moveNumber++;
+        lastMoveDescription = "Move " + moveNumber + ": " + description;
+    }
+
+    private String cardCode(SolitaireCard solitaireCard) {
+        Card card = solitaireCard.getCard();
+        String code = card.getSuit().getCode() + "-" + card.getRank().getSymbol();
+        return TerminalColors.colorize(card.getSuit(), code);
+    }
+
+    private String foundationName(FoundationPile foundation) {
+        return foundation.getSuit().getCode() + " Foundation";
     }
 
     private void displayTable() {
@@ -428,6 +418,10 @@ public class SolitaireGame implements Game {
         table.printTalon();
         System.out.println("Talon Waste");
         table.printWaste();
+        System.out.println();
+        if (lastMoveDescription != null) {
+            System.out.println(lastMoveDescription);
+        }
         System.out.println("==================================================");
     }
 }

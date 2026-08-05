@@ -1,6 +1,7 @@
 package solitaire;
 
 import core.Suit;
+import core.TerminalColors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,11 +56,20 @@ public class SolitaireTable {
             maxHeight = Math.max(maxHeight, pile.size());
         }
 
+        for (int stackIndex = 1; stackIndex <= TABLEAU_COUNT; stackIndex++) {
+            System.out.printf("%-8s", "S" + stackIndex);
+        }
+        System.out.println();
         System.out.println("---------------------------------------------------");
         for (int row = 0; row < maxHeight; row++) {
             for (TableauPile pile : m_stack) {
                 if (row < pile.size()) {
-                    System.out.printf("%-8s", pile.getCard(row));
+                    SolitaireCard card = pile.getCard(row);
+                    if (card.isFaceUp()) {
+                        System.out.print(TerminalColors.paddedCard(card.getCard(), 8));
+                    } else {
+                        System.out.printf("%-8s", card);
+                    }
                 } else {
                     System.out.printf("%-8s", "");
                 }
@@ -72,13 +82,17 @@ public class SolitaireTable {
 
     public void printFoundations() {
         for (FoundationPile pile : f_stack) {
-            System.out.printf("%-8s", pile.getSymbol());
+            System.out.print(TerminalColors.padded(
+                    pile.getSuit(), pile.getSymbol(), 8
+            ));
         }
         System.out.println();
 
         // cards ranks here (A-K format)
         for (FoundationPile pile : f_stack) {
-            System.out.printf("%-8s", pile.getProgress());
+            System.out.print(TerminalColors.padded(
+                    pile.getSuit(), pile.getProgress(), 8
+            ));
         }
         System.out.println();
     }
@@ -90,7 +104,7 @@ public class SolitaireTable {
     }
 
     public void printWaste() {
-        System.out.println(waste.getCards());
+        System.out.println(waste);
     }
 
 

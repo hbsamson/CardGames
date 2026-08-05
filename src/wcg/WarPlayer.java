@@ -3,6 +3,7 @@ package wcg;
 import core.Card;
 import core.Deck;
 import core.Player;
+import core.TerminalColors;
 
 import java.util.Collection;
 
@@ -46,7 +47,7 @@ public class WarPlayer extends Player {
     }
 
     public String getHandAsString() {
-        return hand.asList().toString();
+        return TerminalColors.cards(hand.asList());
     }
 
 

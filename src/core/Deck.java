@@ -60,7 +60,9 @@ public class Deck {
         List<Card> deck = new ArrayList<>(cards);
 
         for (int i = 0; i < deck.size(); i++) {
-            System.out.printf("%-4s", deck.get(i).getSuit().getSymbol()+deck.get(i).getRank().getSymbol());
+            Card card = deck.get(i);
+            String cardText = card.getSuit().getSymbol() + card.getRank().getSymbol();
+            System.out.print(TerminalColors.padded(card.getSuit(), cardText, 4));
 
             if ((i + 1) % 13 == 0) {
                 System.out.println();

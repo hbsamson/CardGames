@@ -1,6 +1,7 @@
 package wcg;
 
 import core.Card;
+import core.TerminalColors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class WarRound {
                 Card playedCard = player.playCard();
                 roundCards.add(playedCard);
                 playedCardsByPlayer.add(
-                        player.getName() + ": " + playedCard
+                        player.getName() + ": " + TerminalColors.card(playedCard)
                 );
             } else { // add players with no cards to toRemove list 
                 // roundCards.add(null);

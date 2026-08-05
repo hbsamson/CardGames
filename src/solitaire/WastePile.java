@@ -1,8 +1,12 @@
 package solitaire;
 
+import core.Card;
+import core.TerminalColors;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 
 public class WastePile {
     private final List<SolitaireCard> cards;
@@ -82,6 +86,19 @@ public class WastePile {
             return "[]";
         }
 
-        return cards.toString();
+        StringJoiner displayedCards = new StringJoiner(", ", "[", "]");
+        int topCardIndex = cards.size() - 1;
+
+        for (int index = 0; index < cards.size(); index++) {
+            Card card = cards.get(index).getCard();
+            String cardCode = card.getSuit().getCode()
+                    + "-" + card.getRank().getSymbol();
+            String coloredCard = TerminalColors.colorize(card.getSuit(), cardCode);
+            displayedCards.add(
+                    index == topCardIndex ? "(" + coloredCard + ")" : coloredCard
+            );
+        }
+
+        return displayedCards.toString();
     }
 }
