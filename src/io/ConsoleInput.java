@@ -75,6 +75,25 @@ public class ConsoleInput implements AutoCloseable {
         }
     }
 
+    public boolean askPlayAgain() {
+        while (true) {
+            System.out.print("\t\nWould you like to play again? (y/n): ");
+            String response = scanner.next().trim();
+
+            if (response.equalsIgnoreCase("y")
+                    || response.equalsIgnoreCase("yes")) {
+                return true;
+            }
+
+            if (response.equalsIgnoreCase("n")
+                    || response.equalsIgnoreCase("no")) {
+                return false;
+            }
+
+            System.out.println("\tInvalid input. Please enter y or n.");
+        }
+    }
+
     public void close() {
         scanner.close();
     }

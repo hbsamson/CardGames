@@ -10,6 +10,7 @@ import static wcg.WarGame.NO_WINNER;
 public class WarRound {
     public static WarGame.Winner gameRound(int roundNumber, List<WarPlayer> players, List<Card> orderedDeck, List<Card> shuffledDeck) {
         List<Card> roundCards = new ArrayList<>();
+        List<String> playedCardsByPlayer = new ArrayList<>();
         String winner = NO_WINNER;
         List<Card> outDeck = new ArrayList<>();
 
@@ -18,6 +19,9 @@ public class WarRound {
             if (player.hasCards()) {
                 Card playedCard = player.playCard();
                 roundCards.add(playedCard);
+                playedCardsByPlayer.add(
+                        player.getName() + ": " + playedCard
+                );
             } else { // add players with no cards to toRemove list 
                 // roundCards.add(null);
                 toRemove.add(player);
@@ -46,15 +50,24 @@ public class WarRound {
             // remove all losing player's cards
             roundCards.removeIf(card -> card == null);
 
-            System.out.println("\nRound " + (roundNumber) + " Top Cards Played: " + roundCards);
-            for (WarPlayer player : players) {
-                System.out.println(player.getName() + "'s Cards in Hand: " + player.getHandAsString());
+            System.out.println("\nRound " + roundNumber + " Top Cards Played:");
+            for (String playedCard : playedCardsByPlayer) {
+                System.out.println("        " + playedCard);
             }
 
-            System.out.println("Winner of Round " + (roundNumber) + ": " + winnerRound.getName());
+            System.out.println("Winner of Round " + roundNumber + ": " + winnerRound.getName());
 
             // add round cards to winner's deck
             winnerRound.receiveCards(roundCards);
+
+            for (WarPlayer player : players) {
+                if (player.hasCards()) {
+                    System.out.println(player.getName() + "'s Cards in Hand: " + player.getHandAsString());
+                } else {
+                    System.out.println(player.getName() + " has no more cards");
+                }
+            }
+
             System.out.println("Winner's deck (" + winnerRound.getName() + ") - " + winnerRound.getHandAsString());
 
             // finding winner, same card count as deck
