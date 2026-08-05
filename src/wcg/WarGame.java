@@ -79,18 +79,17 @@ public class WarGame implements Game {
         }
 
         String inputPath;
+        Deck inputDeck;
+        String cardRegex = "^[DHSC]-(A|[2-9]|10|J|Q|K)$";
+
         while (true) {
-            // ask for path to input deck
             inputPath = input.askFile().trim();
 
-            // Append .txt if missing
             if (!inputPath.toLowerCase().endsWith(".txt")) {
                 inputPath += ".txt";
             }
 
             File file = new File(inputPath);
-
-            // file checking if valid
             if (!file.exists()) {
                 System.out.println("File does not exist. Please try again.");
                 continue;
@@ -100,33 +99,34 @@ public class WarGame implements Game {
                 System.out.println("Path is not a file. Please try again.");
                 continue;
             }
-            break; // if valid file and path
-        }
 
-        String cardRegex = "^[DHSC]-(A|[2-9]|10|J|Q|K)$";
-        String input_data = DeckFileReader.readFileAsString(inputPath);
-        String cleaned_input_data = input_data.replace("Initial card sequence: ", "");
-        StringTokenizer tokenizer = new StringTokenizer(cleaned_input_data, ",");
+            String inputData = DeckFileReader.readFileAsString(inputPath);
+            String cleanedInputData = inputData.replace("Initial card sequence: ", "");
+            StringTokenizer tokenizer = new StringTokenizer(cleanedInputData, ",");
 
-        // placing cards (as tokens) into deck
-//        inputDeck = new ArrayList<>();
-        Deck inputDeck = new Deck();
-        while (tokenizer.hasMoreTokens()) {
-            String cardString = tokenizer.nextToken().trim();
-            if (!cardString.matches(cardRegex)) { // checking if token matches card regex
-                System.out.println("\nInvalid card: " + cardString);
-                System.out.println("Valid card format: <Suit>-<Rank>");
-                System.out.println("Examples: D-A (Ace of Diamonds), S-10 (10 of Spades), H-K (King of Hearts)");
-                System.out.println("Valid suits: C (Clubs), D (Diamonds), H (Hearts), S (Spades)");
-                System.out.println("Valid ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J (Jack), Q (Queen), K (King)");
-                return;
+            inputDeck = new Deck();
+            boolean validDeck = true;
+            while (tokenizer.hasMoreTokens()) {
+                String cardString = tokenizer.nextToken().trim();
+                if (!cardString.matches(cardRegex)) {
+                    printInvalidCardMessage(cardString);
+                    validDeck = false;
+                    break;
+                }
+                inputDeck.addToBottom(Card.fromString(cardString));
             }
-            inputDeck.addToBottom(Card.fromString(cardString));
-        }
 
-        if (inputDeck.size() != 52) {
-            System.out.println("Deck must contain exactly 52 cards.");
-            return;
+            if (!validDeck) {
+                System.out.println("Please choose a valid deck file.");
+                continue;
+            }
+
+            if (inputDeck.size() != 52) {
+                System.out.println("Deck must contain exactly 52 cards. Please try again.");
+                continue;
+            }
+
+            break;
         }
 
         // print path txt file deck
@@ -180,6 +180,10 @@ public class WarGame implements Game {
 
     @Override
     public void play() {
+        if (!initialized) {
+            return;
+        }
+
         // Continue War rounds
         while (!isGameOver()) {
             playNextRound();
@@ -259,10 +263,11 @@ public class WarGame implements Game {
     }
 
     public void playNextRound() {
-        updateWinner();
         if (!initialized) { // deck not initialized
             return;
         }
+
+        updateWinner();
 
         if (isGameOver()) {
             return;
@@ -277,6 +282,14 @@ public class WarGame implements Game {
         );
 
         updateWinner();
+    }
+
+    private void printInvalidCardMessage(String cardString) {
+        System.out.println("\nInvalid card: " + cardString);
+        System.out.println("Valid card format: <Suit>-<Rank>");
+        System.out.println("Examples: D-A (Ace of Diamonds), S-10 (10 of Spades), H-K (King of Hearts)");
+        System.out.println("Valid suits: C (Clubs), D (Diamonds), H (Hearts), S (Spades)");
+        System.out.println("Valid ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J (Jack), Q (Queen), K (King)");
     }
 
     private void updateWinner() {

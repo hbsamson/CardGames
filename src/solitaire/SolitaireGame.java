@@ -145,6 +145,9 @@ public class SolitaireGame implements Game {
         }
 
         String inputPath;
+        Deck inputDeck;
+        String cardRegex = "^[DHSC]-(A|[2-9]|10|J|Q|K)$";
+
         while (true) {
             inputPath = input.askFile().trim();
 
@@ -163,34 +166,35 @@ public class SolitaireGame implements Game {
                 continue;
             }
 
-            break;
-        }
+            String data = DeckFileReader.readFileAsString(inputPath);
+            String inputData = data.replace("Initial card sequence: ", "");
+            StringTokenizer tokenizer = new StringTokenizer(inputData, ",");
 
-        String cardRegex = "^[DHSC]-(A|[2-9]|10|J|Q|K)$";
-        String data = DeckFileReader.readFileAsString(inputPath);
-        String inputData = data.replace("Initial card sequence: ", "");
-        StringTokenizer tokenizer = new StringTokenizer(inputData, ",");
+            inputDeck = new Deck();
+            boolean validDeck = true;
+            while (tokenizer.hasMoreTokens()) {
+                String cardString = tokenizer.nextToken().trim();
 
-        // placing cards (as tokens) into deck
-        Deck inputDeck = new Deck();
-        while (tokenizer.hasMoreTokens()) {
-            String cardString = tokenizer.nextToken().trim();
+                if (!cardString.matches(cardRegex)) {
+                    printInvalidCardMessage(cardString);
+                    validDeck = false;
+                    break;
+                }
 
-            if (!cardString.matches(cardRegex)) {
-                System.out.println("\nInvalid card: " + cardString);
-                System.out.println("Valid card format: <Suit>-<Rank>");
-                System.out.println("Examples: D-A (Ace of Diamonds), S-10 (10 of Spades), H-K (King of Hearts)");
-                System.out.println("Valid suits: C (Clubs), D (Diamonds), H (Hearts), S (Spades)");
-                System.out.println("Valid ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J (Jack), Q (Queen), K (King)");
-                return false;
+                inputDeck.addToBottom(Card.fromString(cardString));
             }
 
-            inputDeck.addToBottom(Card.fromString(cardString));
-        }
+            if (!validDeck) {
+                System.out.println("Please choose a valid deck file.");
+                continue;
+            }
 
-        if (inputDeck.size() != 52) {
-            System.out.println("Deck must contain exactly 52 cards.");
-            return false;
+            if (inputDeck.size() != 52) {
+                System.out.println("Deck must contain exactly 52 cards. Please try again.");
+                continue;
+            }
+
+            break;
         }
 
         System.out.println("\nDeck from " + inputPath + ": ");
@@ -216,6 +220,14 @@ public class SolitaireGame implements Game {
         }
 
         return true;
+    }
+
+    private void printInvalidCardMessage(String cardString) {
+        System.out.println("\nInvalid card: " + cardString);
+        System.out.println("Valid card format: <Suit>-<Rank>");
+        System.out.println("Examples: D-A (Ace of Diamonds), S-10 (10 of Spades), H-K (King of Hearts)");
+        System.out.println("Valid suits: C (Clubs), D (Diamonds), H (Hearts), S (Spades)");
+        System.out.println("Valid ranks: A, 2, 3, 4, 5, 6, 7, 8, 9, 10, J (Jack), Q (Queen), K (King)");
     }
 
     private boolean tryTableauToFoundation() {
