@@ -291,9 +291,14 @@ public class WarGame implements Game {
         }
 
         if (activePlayers == 1) {
+            List<Card> outDeck = new ArrayList<>(
+                    remainingPlayer.getHand().asList()
+            );
+            outDeck.addAll(excessCards);
+
             this.winner = new Winner(
                     remainingPlayer.getName(),
-                    List.copyOf(remainingPlayer.getHand().asList())
+                    List.copyOf(outDeck)
             );
         }
     }
