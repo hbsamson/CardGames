@@ -1,7 +1,6 @@
 package solitaire;
 
 import core.Rank;
-import core.Suit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,19 +81,19 @@ public class TableauPile {
 
         SolitaireCard bot = peekBottomCard();
 
-        // moving king to empty
-        if (bot == null) { // no card in stack (empty)
-            if (cards.isEmpty() && size != 1) { // destination is empty && source is not already in empty stack
+        // moving king to empty stack
+        if (bot == null) {
+            if (cards.isEmpty() && size != 1) {
                 return candidate.getCard().getRank() == Rank.KING;
             }
         } else { // else compare with bottom card
-            boolean botSuit = bot.getCard().isRed(); // is dest is red suit
-            boolean candidateSuit = candidate.getCard().isRed(); // is source red suit
+            boolean botSuit = bot.getCard().isRed();
+            boolean candidateSuit = candidate.getCard().isRed();
 
             int botRank = bot.getCard().getRank().getValue();
             int candidateRank = candidate.getCard().getRank().getValue();
 
-            return candidateRank == botRank - 1 && candidateSuit != botSuit ; // card is 1 less than and different suit
+            return candidateRank == botRank - 1 && candidateSuit != botSuit ;
         }
         return false;
     }

@@ -8,5 +8,4 @@ public interface Game {
     boolean isGameOver();
 
     void displayResult();
-
 }

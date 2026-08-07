@@ -8,7 +8,6 @@ import java.util.List;
 
 public class SolitaireTable {
     public static final int TABLEAU_COUNT = 7;
-    public static final int FOUNDATION_COUNT = 4;
 
     private final List<TableauPile> m_stack;
     private final List<FoundationPile> f_stack;
@@ -51,7 +50,6 @@ public class SolitaireTable {
     public void printTableau() {
         int maxHeight = 0;
 
-        // Find the tallest tableau pile
         for (TableauPile pile : m_stack) {
             maxHeight = Math.max(maxHeight, pile.size());
         }
@@ -106,7 +104,6 @@ public class SolitaireTable {
     public void printWaste() {
         System.out.println(waste);
     }
-
 
     public boolean areFoundationsComplete() {
         for (FoundationPile foundation : f_stack) {

@@ -50,7 +50,6 @@ public class WarPlayer extends Player {
         return TerminalColors.cards(hand.asList());
     }
 
-
     public String getName() {
         return name;
     }

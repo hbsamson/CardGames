@@ -40,9 +40,7 @@ public class TalonPile {
 
     public List<SolitaireCard> drawCards(int count) {
         if (count <= 0) {
-            throw new IllegalArgumentException(
-                    "Draw count must be greater than zero."
-            );
+            throw new IllegalArgumentException("Draw count must be greater than zero.");
         }
 
         List<SolitaireCard> drawnCards = new ArrayList<>();
@@ -56,24 +54,12 @@ public class TalonPile {
         return drawnCards;
     }
 
-    public SolitaireCard peekTopCard() {
-        if (isEmpty()) {
-            return null;
-        }
-
-        return cards.get(cards.size() - 1);
-    }
-
     public boolean isEmpty() {
         return cards.isEmpty();
     }
 
     public int size() {
         return cards.size();
-    }
-
-    public void clear() {
-        cards.clear();
     }
 
     public List<SolitaireCard> getCards() {

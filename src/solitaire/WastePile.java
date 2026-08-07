@@ -15,9 +15,6 @@ public class WastePile {
         cards = new ArrayList<>();
     }
 
-    /**
-     * Adds a revealed card to the top of the waste pile.
-     */
     public void addCard(SolitaireCard card) {
         if (card == null) {
             return;
@@ -27,19 +24,12 @@ public class WastePile {
         cards.add(card);
     }
 
-    /**
-     * Adds multiple drawn cards to the waste pile.
-     * The last card added becomes the exposed top card.
-     */
     public void addCards(List<SolitaireCard> cardsToAdd) {
         for (SolitaireCard card : cardsToAdd) {
             addCard(card);
         }
     }
 
-    /**
-     * Returns the exposed top card without removing it.
-     */
     public SolitaireCard peekTopCard() {
         if (cards.isEmpty()) {
             return null;
@@ -48,9 +38,6 @@ public class WastePile {
         return cards.get(cards.size() - 1);
     }
 
-    /**
-     * Removes and returns the exposed top card.
-     */
     public SolitaireCard removeTopCard() {
         if (cards.isEmpty()) {
             return null;
@@ -59,9 +46,6 @@ public class WastePile {
         return cards.remove(cards.size() - 1);
     }
 
-    /**
-     * Removes all cards for recycling back into the talon.
-     */
     public List<SolitaireCard> removeAllCards() {
         List<SolitaireCard> recycled = new ArrayList<>(cards);
         cards.clear();
@@ -91,12 +75,9 @@ public class WastePile {
 
         for (int index = 0; index < cards.size(); index++) {
             Card card = cards.get(index).getCard();
-            String cardCode = card.getSuit().getCode()
-                    + "-" + card.getRank().getSymbol();
+            String cardCode = card.getSuit().getSymbol() + "-" + card.getRank().getSymbol();
             String coloredCard = TerminalColors.colorize(card.getSuit(), cardCode);
-            displayedCards.add(
-                    index == topCardIndex ? "(" + coloredCard + ")" : coloredCard
-            );
+            displayedCards.add(index == topCardIndex ? "(" + coloredCard + ")" : coloredCard);
         }
 
         return displayedCards.toString();

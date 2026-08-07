@@ -25,7 +25,6 @@ public class FoundationPile {
         }
 
         Suit candidateSuit = candidate.getCard().getSuit();
-        // Candidate must always match this foundation's fixed suit
         if (candidateSuit != suit) {
             return false;
         }

@@ -4,31 +4,36 @@ import core.Card;
 import core.TerminalColors;
 
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static wcg.WarGame.NO_WINNER;
 
 public class WarRound {
     public static WarGame.Winner gameRound(int roundNumber, List<WarPlayer> players, List<Card> orderedDeck, List<Card> shuffledDeck) {
-        List<Card> roundCards = new ArrayList<>();
+        LinkedList<Card> roundCards = new LinkedList<>();
         List<String> playedCardsByPlayer = new ArrayList<>();
         String winner = NO_WINNER;
         List<Card> outDeck = new ArrayList<>();
 
+        Map<WarPlayer, Integer> cardsBeforeRound = new IdentityHashMap<>();
         List<WarPlayer> toRemove = new ArrayList<>();
         for (WarPlayer player : players) {
             if (player.hasCards()) {
+                cardsBeforeRound.put(player, player.getCardCount());
                 Card playedCard = player.playCard();
                 roundCards.add(playedCard);
                 playedCardsByPlayer.add(
                         player.getName() + ": " + TerminalColors.card(playedCard)
                 );
-            } else { // add players with no cards to toRemove list 
-                // roundCards.add(null);
+            } else {
                 toRemove.add(player);
             }
         }
-        // players.removeAll(toRemove);
+       
 
         // find highest card
         Card highest = null;
@@ -67,9 +72,11 @@ public class WarRound {
                 if (player.hasCards()) {
                     System.out.println(player.getName() + "'s Cards in Hand: " + player.getHandAsString());
                 } else {
-                    System.out.println(TerminalColors.red(
-                            player.getName() + " has no more cards"
-                    ));
+                    if (cardsBeforeRound.getOrDefault(player, 0) > 0) {
+                        System.out.println(TerminalColors.red(
+                                player.getName() + " has no more cards"
+                        ));
+                    }
                 }
             }
 

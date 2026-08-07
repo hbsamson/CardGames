@@ -51,9 +51,6 @@ public final class Card {
     }
 
     @Override
-//    public String toString() {
-//        return rank + " of " + suit;
-//    }
     public String toString() {
         return suit.getSymbol() + "-" + rank.getSymbol();
     }

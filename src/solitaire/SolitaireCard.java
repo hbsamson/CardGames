@@ -2,7 +2,6 @@ package solitaire;
 
 import core.Card;
 import core.Rank;
-import core.Suit;
 import core.TerminalColors;
 
 public class SolitaireCard {
@@ -34,18 +33,8 @@ public class SolitaireCard {
         return card.getRank();
     }
 
-    public Suit getSuit() {
-        return card.getSuit();
-    }
-
-    public String toTableauString() {
-        return faceUp ? TerminalColors.card(card) : " X ";
-    }
-
     @Override
     public String toString() {
         return faceUp ? TerminalColors.card(card) : "XX";
     }
-
-
 }

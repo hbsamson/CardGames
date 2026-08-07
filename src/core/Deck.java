@@ -32,10 +32,6 @@ public class Deck {
         return new SolitaireCard(card);
     }
 
-    public Card viewTopCard() {
-        return cards.peekFirst();
-    }
-
     public void addToBottom(Card card) {
         cards.offerLast(card);
     }

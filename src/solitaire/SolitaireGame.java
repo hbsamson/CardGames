@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static solitaire.SolitaireMoveType.TABLEAU_TO_TABLEAU;
 import static solitaire.SolitaireTable.TABLEAU_COUNT;
 
 public class SolitaireGame implements Game {
@@ -17,7 +16,6 @@ public class SolitaireGame implements Game {
     private final ConsoleInput input;
 
     private SolitaireTable table;
-    private Deck deck;
 
     private SolitaireMove lastMove;
     private int nonProgressTableauMoves;
@@ -41,7 +39,6 @@ public class SolitaireGame implements Game {
 
     @Override
     public void initialize() throws Exception {
-        // Load and shuffle using your existing implementation.
         System.out.println("\n=== Hello, welcome to Hannah's Solitaire Game ===");
 
         table = new SolitaireTable();
@@ -50,6 +47,7 @@ public class SolitaireGame implements Game {
             lost = true;
             return;
         }
+
         displayTable();
     }
 
@@ -61,9 +59,6 @@ public class SolitaireGame implements Game {
                 break;
             }
 
-            boolean moveMadeThisIteration = false;
-
-            // Permanent progress
             if (tryTableauToFoundation()) {
                 progressMadeThisCycle = true;
                 nonProgressTableauMoves = 0;
@@ -71,14 +66,12 @@ public class SolitaireGame implements Game {
                 continue;
             }
 
-            // Tableau rearrangement
             if (nonProgressTableauMoves < MAX_NON_PROGRESS_TABLEAU_MOVES && tryTableauToTableau()) {
                 nonProgressTableauMoves++;
                 displayTable();
                 continue;
             }
 
-            // Permanent progress
             if (tryWasteToFoundation()) {
                 progressMadeThisCycle = true;
                 nonProgressTableauMoves = 0;
@@ -107,7 +100,6 @@ public class SolitaireGame implements Game {
             }
 
             lost = true;
-
         }
     }
 
@@ -123,12 +115,12 @@ public class SolitaireGame implements Game {
         if (!lost) {
             System.out.println();
             System.out.println(TerminalColors.green(
-                    "===== Congrats! Game Complete! ========="
+                    "============ Congrats! Game Complete! ============"
             ));
         } else {
             System.out.println();
             System.out.println(TerminalColors.red(
-                    "========= Oh noooo... Game Lost ========="
+                    "============= Oh nooooo... Game Lost ============="
             ));
         }
     }
@@ -206,7 +198,7 @@ public class SolitaireGame implements Game {
         System.out.println("\nDeck from " + inputPath + ": ");
         inputDeck.printed();
 
-        // add 1 per column, next row starts with next col
+        // card distribution: add 1 per column, next row starts with next col
         int index = 0;
         for (int row = 0; row < TABLEAU_COUNT; row++) {
             for (int col = row; col < TABLEAU_COUNT; col++) {
@@ -215,12 +207,10 @@ public class SolitaireGame implements Game {
             }
         }
 
-        // flip all bottom cards to face up
         for (TableauPile stack : table.getTableau()) {
             stack.revealBottomCard();
         }
 
-        // add excess to talon
         while (!inputDeck.isEmpty()) {
             table.getTalon().addCard(inputDeck.drawSolitaireTopCard());
         }
@@ -249,8 +239,7 @@ public class SolitaireGame implements Game {
                     zone.addCard(movedCard);
                     stack.revealBottomCard();
                     lastMove = null;
-                    recordMove(
-                            "Move " + cardCode(movedCard)
+                    recordMove("Move " + cardCode(movedCard)
                                     + " from Stack " + (stackIndex + 1)
                                     + " to " + foundationName(zone)
                     );
@@ -275,7 +264,7 @@ public class SolitaireGame implements Game {
             int sourceSize = source.size();
 
             for (int destinationIndex = 0; destinationIndex < TABLEAU_COUNT; destinationIndex++) {
-                // Do not move onto the same pile
+                // do not move onto the same pile
                 if (sourceIndex == destinationIndex) {
                     continue;
                 }
@@ -294,8 +283,7 @@ public class SolitaireGame implements Game {
                     source.revealBottomCard();
                     // Save this successful move
                     lastMove = proposedMove;
-                    recordMove(
-                            "Move " + cardCode(movedCard)
+                    recordMove("Move " + cardCode(movedCard)
                                     + " from Stack " + (sourceIndex + 1)
                                     + " to Stack " + (destinationIndex + 1)
                     );
@@ -336,8 +324,7 @@ public class SolitaireGame implements Game {
                     source.revealBottomCard();
                     // Save this successful move
                     lastMove = proposedMove;
-                    recordMove(
-                            "Move " + cardCode(candidate)
+                    recordMove("Move " + cardCode(candidate)
                                     + " from Stack " + (sourceIndex + 1)
                                     + " to Stack " + (destinationIndex + 1)
                     );
@@ -361,8 +348,7 @@ public class SolitaireGame implements Game {
                 SolitaireCard movedCard = talon_open.removeTopCard();
                 zone.addCard(movedCard);
                 lastMove = null;
-                recordMove(
-                        "Move " + cardCode(movedCard)
+                recordMove("Move " + cardCode(movedCard)
                                 + " from Talon Waste to " + foundationName(zone)
                 );
                 return true;
@@ -400,8 +386,7 @@ public class SolitaireGame implements Game {
     private void drawFromTalon() {
         int drawCount = Math.min(DRAW_COUNT, table.getTalon().size());
         table.drawFromTalon(DRAW_COUNT);
-        recordMove(
-                "Draw " + drawCount + (drawCount == 1 ? " card" : " cards")
+        recordMove("Draw " + drawCount + (drawCount == 1 ? " card" : " cards")
                         + " from Talon to Talon Waste"
         );
     }
@@ -423,7 +408,7 @@ public class SolitaireGame implements Game {
     }
 
     private String foundationName(FoundationPile foundation) {
-        return foundation.getSuit().getCode() + " Foundation";
+        return foundation.getSuit().getSymbol() + " Foundation";
     }
 
     private void displayTable() {
