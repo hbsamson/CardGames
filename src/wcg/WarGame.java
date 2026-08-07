@@ -22,18 +22,16 @@ public class WarGame implements Game {
     public static String NO_WINNER = "none";
     public record Winner(String name, List<Card> deck) {}
     private final ConsoleInput input;
-    private boolean initialized = false;
+    private boolean initializedInputFile = false;
 
-    // Game state shared by initialize(), play(), and displayResult()
     private List<Card> orderedDeck;
-    private List<Card> inputDeck;
     private List<Card> shuffledDeck;
     private List<WarPlayer> players;
     public static List<Card> excessCards;
     private Winner winner;
 
-    private int n;
-    private int s;
+    private int numberOfPlayers;
+    private int shuffleCount;
     private int roundNumber;
 
     public WarGame(ConsoleInput input) {
@@ -44,26 +42,24 @@ public class WarGame implements Game {
 
     @Override
     public void initialize() throws Exception {
-        // Read, shuffle and deal cards
         System.out.println("\n=== Hello, welcome to Hannah's War Card Game ===");
 
-        // reads input.txt for in order listing of cards
+        // uses input.txt for proper order listing hierarchy of cards
         String ordered_path = "src/decks/input.txt";
         String ordered_data = DeckFileReader.readFileAsString(ordered_path);
         String cleaned_ordered_data = ordered_data.replace("Initial card sequence: ", "");
-        String[] string_deck = cleaned_ordered_data.split(","); // convert to list of strings
+        String[] string_deck = cleaned_ordered_data.split(",");
 
-        // empty card ordered card deck
         orderedDeck = new ArrayList<>();
-        // converts string to Card class
         for (String card : string_deck) {
             orderedDeck.add(Card.fromString(card));
         }
 
-        // uncomment for quick testing
-        // n = 2;
+        // uncomment for quick testing for ui
+        // numberOfPlayers = 2;
         // s = 2;
         // String input_path = "src/decks/input.txt";
+
         System.out.println("Enter the path to a card deck file.");
         System.out.println("If you omit the .txt extension, it will be added automatically.");
         System.out.println("Example: src/decks/input");
@@ -130,44 +126,40 @@ public class WarGame implements Game {
             break;
         }
 
-        // print path txt file deck
-        initialized = true;
+        initializedInputFile = true;
+
         System.out.println("\nDeck from " + inputPath + ": ");
-//        System.out.println(inputDeck);
         inputDeck.printed();
 
-        // player count 2 <= n <= 8
-        n = input.askPlayerCount();
-        
-        // shuffle inputDeck
-        s = input.askShuffleCount();
+        numberOfPlayers = input.askPlayerCount();
+        shuffleCount = input.askShuffleCount();
+
         Shuffle shuffler = new PerfectShuffle();
         shuffledDeck = shuffler.shuffle(inputDeck.asList());
-        for (int i=0; i < s-1; i++) {
+        for (int index=0; index < shuffleCount-1; index++) {
             shuffledDeck = shuffler.shuffle(shuffledDeck);
         }
 
         System.out.println("\nShuffled Deck:");
         printDeck(shuffledDeck);
 
-        // initialize players
         players = new ArrayList<>();
-        for (int i=0; i < n; i++) {
-            players.add(new WarPlayer(i + 1));
+        for (int index=0; index < numberOfPlayers; index++) {
+            players.add(new WarPlayer(index + 1));
         }
 
         // distribution of deck cards to players 0, 1, 2..., n, 0, 1, 2..., n
-        int c = shuffledDeck.size()/n;
+        int equalCardCount = shuffledDeck.size()/numberOfPlayers;
         excessCards = new ArrayList<>();
 
         int index = 0;
         for (int i = 0; i < shuffledDeck.size(); i++) {
-            if (players.get(index).getCardCount() < c) {
+            if (players.get(index).getCardCount() < equalCardCount) {
                 players.get(index).receiveCard(shuffledDeck.get(i));
             } else {
                 excessCards.add(shuffledDeck.get(i));
             }
-            index = (index + 1) % n;
+            index = (index + 1) % numberOfPlayers;
         }
 
         System.out.println();
@@ -181,25 +173,22 @@ public class WarGame implements Game {
 
     @Override
     public void play() {
-        if (!initialized) {
+        if (!initializedInputFile) {
             return;
         }
 
-        // Continue War rounds
         while (!isGameOver()) {
             playNextRound();
         }
     }
     @Override
     public boolean isGameOver() {
-        // One player owns all cards.
         return !NO_WINNER.equals(winner.name());
     }
 
     @Override
     public void displayResult() {
-        // Display War winner
-        if (!initialized) {
+        if (!initializedInputFile) {
             System.out.println("\n=== Game terminated due to invalid deck input ===");
             return;
         }
@@ -208,6 +197,7 @@ public class WarGame implements Game {
         System.out.println(TerminalColors.green(
                 "===== " + winner.name().toUpperCase() + " IS THE WINNER!!! ====="
         ));
+
         printDeck(winner.deck());
         writeWinnerDeckToFile(winner.deck());
     }
@@ -267,7 +257,7 @@ public class WarGame implements Game {
     }
 
     public void playNextRound() {
-        if (!initialized) { // deck not initialized
+        if (!initializedInputFile) {
             return;
         }
 
